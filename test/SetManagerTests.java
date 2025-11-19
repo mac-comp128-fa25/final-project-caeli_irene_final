@@ -83,11 +83,10 @@ public class SetManagerTests {
     void testBoard(){
         assertEquals(12, board.size());
         int sets = 0;
-        for(int i=0; i<11;i++){
-            for(int j=0; j<11; j++){
-                for (int k=0; k<11;k++){
+        for(int i=0; i<10;i++){
+            for(int j=i+1; j<11; j++){
+                for (int k=j+1; k<12;k++){
                     if(i==j || j==k || i==k){
-                        sets = sets;
                     } else {
                         if(check.isValidSet(board.get(i),board.get(j),board.get(k))){
                             sets++;
