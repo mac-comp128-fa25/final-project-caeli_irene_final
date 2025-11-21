@@ -64,7 +64,7 @@ public class Card {
     }
 
     public String thirdFill(Card other){
-        List<String> tempFill = new ArrayList<>(shapes);
+        List<String> tempFill = new ArrayList<>(fills);
         tempFill.remove(this.fill);
         tempFill.remove(other.getFill());
         return tempFill.get(0);
@@ -124,6 +124,10 @@ public class Card {
 
     public boolean isSelected() {
         return isSelected;
+    }
+
+    public String toString(){
+        return "["+shape+" "+fill+" "+color+" "+number+"]";
     }
 
     public static void main(String arg[]){

@@ -11,45 +11,53 @@ public class SetManager {
     private final Map<Point, Card> currentCards = new HashMap();
     private ArrayList<Card> selectedCards; 
     private GameBoard gameBoard;
-    private static List<Card> board;
-    private static Random random = new Random();
+    private Guess guess = new Guess();
+    private Deck cards = new Deck();
+    private List<List<String>> sets = new ArrayList<>();
+    private List<Card> board;
+    private Random random = new Random();
 
     public SetManager(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
     }
 
-    public static List<Card> generateBoard(){
+    public List<Card> generateBoard(){
         board = new ArrayList<>();
         int set = 0;
-        board.add(new Card());
+        int stop = 0;
         addCard(board);
-        board.add(getThird(board.get(0), board.get(1)));
-        set++;
         addCard(board);
-        while(set<6){
+        addCard(board);
+        addCard(board);
+        while(set<6 && stop < 100){
             if(board.size()>=12){
                 board.remove(random.nextInt(11));
-                if(addSet(board)){
-                    set++;
-                }
+                addSet(board);
             }
             int ran = random.nextInt(10);
             if(ran<3){
                 addCard(board);
             } else{
-                if(addSet(board)){
-                    set++;
-                }
+                addSet(board);
             }
+            set = checkSets(board);
+            stop++;
         }
-        while(board.size()<12){
-            addCard(board);
+        stop = 0;
+        while(board.size()<12 && stop < 100){
+            List<String> card = cards.getNextCard();
+            board.add(new Card(card.get(0), card.get(1), card.get(2), Integer.valueOf(card.get(3))));
+            set = checkSets(board);
+            if(set > 6){
+                board.remove(board.size()-1);
+            }
+            stop++;
         }
         return board;
     }
 
-    private static boolean addSet(List<Card> board){
+    private void addSet(List<Card> board){
         int ran1 = random.nextInt(board.size()-1);
         int ran2 = random.nextInt(board.size()-1);
         while(ran2==ran1){
@@ -58,19 +66,19 @@ public class SetManager {
         Card test = getThird(board.get(ran1),board.get(ran2));
         if(!checkCard(board, test)){
             board.add(test);
-            return true;
+            cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
         } 
-        return false;
     }
 
-    private static void addCard(List<Card> board){
+    private void addCard(List<Card> board){
         Card test = new Card();
         if(!checkCard(board, test)){
             board.add(test);
+            cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
         }
     }
 
-    private static boolean checkCard(List<Card> board, Card test){
+    private boolean checkCard(List<Card> board, Card test){
         Iterator<Card> iter = board.iterator();
         while(iter.hasNext()){
             Card old = iter.next();
@@ -79,6 +87,25 @@ public class SetManager {
             }
         }
         return false;
+    }
+
+    private int checkSets(List<Card> board){
+        int sets = 0;
+        this.sets.clear();
+        for(int i=0; i<board.size()-2;i++){
+            for(int j=i+1; j<board.size()-1; j++){
+                for (int k=j+1; k<board.size();k++){
+                    if(i==j || j==k || i==k){
+                    } else {
+                        if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
+                            sets++;
+                            this.sets.add(List.of(board.get(i).toString(),board.get(j).toString(),board.get(k).toString()));
+                        }
+                    }
+                }
+            }
+        }
+        return sets;
     }
 
     /*
@@ -99,7 +126,7 @@ public class SetManager {
         return positions;
     }
 
-    public static Card getThird(Card card1, Card card2){
+    public Card getThird(Card card1, Card card2){
         String color;
         String shape;
         String fill;
@@ -132,7 +159,6 @@ public class SetManager {
      * Remove and replace if the guess is correct
      */
     public boolean processGuess(Card card1, Card card2, Card card3) {
-        Guess guess = new Guess();
         if (!guess.isValidSet(card1, card2, card3)) {
             return false;
         }
@@ -214,7 +240,7 @@ public class SetManager {
         return new ArrayList<>(board);
     }
 
-    public static void main(String arg[]){
+    public void main(String arg[]){
         // Card card1 = new Card();
         // Card card2 = new Card();
         // Card card3 = getThird(card1, card2);

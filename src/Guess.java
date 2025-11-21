@@ -37,7 +37,7 @@ public class Guess {
         boolean shapeCheck= checkAttribute(card1.getShape(), card2.getShape(), card3.getShape());
         boolean fillCheck= checkAttribute(card1.getFill(), card2.getFill(), card3.getFill());
         boolean numberCheck= checkAttribute(card1.getNumber(), card2.getNumber(), card3.getNumber());
-
+        System.out.println(card1.toString()+card2.toString()+card3.toString());
         return colorCheck && shapeCheck && fillCheck && numberCheck;
     }
 
