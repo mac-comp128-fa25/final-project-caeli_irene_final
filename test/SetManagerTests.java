@@ -131,7 +131,7 @@ public class SetManagerTests {
 
     @Test
     public void testBoardMultipleTimes() {
-        final int TRIALS = 2;  // test 50 generated boards
+        final int TRIALS = 10;  // test 50 generated boards
         for (int t = 0; t < TRIALS; t++) {
             List<Card> board = manager.generateBoard();
 
