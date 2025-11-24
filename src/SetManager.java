@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ public class SetManager {
     private List<List<String>> sets = new ArrayList<>();
     private List<Card> board;
     private Random random = new Random();
+    private final boolean[] used = new boolean[81]; //CHANGED add used card 
 
     public SetManager(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
@@ -57,26 +59,70 @@ public class SetManager {
         return board;
     }
 
+    //CHANGED add set method
+    // private void addSet(List<Card> board){
+    //     int ran1 = random.nextInt(board.size()-1);
+    //     int ran2 = random.nextInt(board.size()-1);
+    //     while(ran2==ran1){
+    //         ran2 = random.nextInt(board.size()-1);
+    //     }
+    //     Card test = getThird(board.get(ran1),board.get(ran2));
+    //     if(!checkCard(board, test)){
+    //         board.add(test);
+    //         cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
+    //     } 
+    // }
     private void addSet(List<Card> board){
-        int ran1 = random.nextInt(board.size()-1);
-        int ran2 = random.nextInt(board.size()-1);
-        while(ran2==ran1){
-            ran2 = random.nextInt(board.size()-1);
+        int i = random.nextInt(board.size());
+        int j = random.nextInt(board.size());
+        while(i == j) j = random.nextInt(board.size());
+
+        Card c1 = board.get(i);
+        Card c2 = board.get(j);
+
+        Card c3 = getThird(c1, c2);
+
+        // compute the ID of c3 so we prevent duplicates
+        int id = getCardID(c3);   // You will add this helper below
+
+        if(!used[id]) {
+            used[id] = true;
+            board.add(new Card(id));
         }
-        Card test = getThird(board.get(ran1),board.get(ran2));
-        if(!checkCard(board, test)){
-            board.add(test);
-            cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
-        } 
     }
 
+    //CHANGED add card method
+    // private void addCard(List<Card> board){
+    //     Card test = new Card();
+    //     if(!checkCard(board, test)){
+    //         board.add(test);
+    //         cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
+    //     }
+    // }
     private void addCard(List<Card> board){
-        Card test = new Card();
-        if(!checkCard(board, test)){
-            board.add(test);
-            cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
+        // choose an unused id
+        int id = random.nextInt(81);
+        while(used[id]) {
+            id = random.nextInt(81);
         }
+        used[id] = true;
+        board.add(new Card(id));
     }
+
+    //CHANGED add get card id method -> could also be in Card (helper method for add card)
+
+    private int getCardID(Card c) {
+        int shape  = List.of("Oval","Diamond","Squiggle").indexOf(c.getShape());
+        int color  = List.of("Red","Green","Purple").indexOf(c.getColor());
+        int fill   = List.of("Empty","Solid","Striped").indexOf(c.getFill());
+        int number = c.getNumber() - 1;  // convert 1-3 → 0-2
+
+        return shape 
+            + 3 * color
+            + 9 * fill
+            + 27 * number;
+    }
+
 
     private boolean checkCard(List<Card> board, Card test){
         Iterator<Card> iter = board.iterator();
@@ -251,6 +297,7 @@ public class SetManager {
         //     System.out.println(test.getNumber());
         // }
         List<Card> board = generateBoard();
+        Arrays.fill(used, false);
         for(Card test : board){
             System.out.println(test.getShape()+" "+test.getColor()+" "+test.getFill()+" "+test.getNumber());
         }
