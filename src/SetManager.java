@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import edu.macalester.graphics.Point;
 import java.util.Random;
 import java.util.Set;
@@ -20,11 +21,19 @@ public class SetManager {
     //private List<List<String>> sets = new ArrayList<>(); stopped tracking sets -> used in checkSets
     private List<Card> board;
     private Random random = new Random();
-    private final boolean[] used = new boolean[81]; //CHANGED add used card 
+    private final boolean[] used = new boolean[81]; //CHANGED add used card
+    Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
+    
 
-    public SetManager(GameBoard gameBoard) {
+    public SetManager(GameBoard gameBoard) { 
         this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
+
+    }
+
+    //CHANGED VIZUALIZER
+    public void setVisualizer(Visualizer viz) {
+        this.viz = viz;
     }
 
     public List<Card> generateBoard(){
@@ -109,6 +118,9 @@ public class SetManager {
             board.add(c); // place it on board
             used[id] = true; // mark it as used
 
+            viz.onAddCard(c.toString()); // CHANGED pass card added to vizualizer
+
+
             int setsNow = checkSets(board); // how many sets currently present
             if (setsNow <= 6) { // don't allow more than 6 sets
                 if (fillBoard(pos + 1)) { // call fill board again to add an extra card
@@ -119,6 +131,8 @@ public class SetManager {
             // if we have more than 6 sets -> backtrack
             board.remove(board.size() - 1);
             used[id] = false;
+
+
         }
 
         return false; // this path leads to no valid 6 set arrangements -> throws an exception in generate board
@@ -301,7 +315,7 @@ public class SetManager {
      * UI
      * Places cards on the Gameboard object
      */
-    private List<Point> generateGridPositions() {
+    public List<Point> generateGridPositions() { //CHANGED made public so vizualizer can access it
         List<Point> positions = new ArrayList<>();
         int cols = 4;
         int rows = 3;
@@ -411,7 +425,57 @@ public class SetManager {
         return new ArrayList<>(board);
     }
 
-    public void main(String arg[]){
+    
+    public List<Integer> generateBoardIDsForViz() {
+        List<Integer> result = new ArrayList<>();
+        boolean[] usedLocal = new boolean[81];
+        backtrackViz(result, usedLocal);
+        return result;
+    }
+
+    
+
+
+    private boolean backtrackViz(List<Integer> result, boolean[] usedLocal) {
+        // target size 12 (standard Set board)
+        if (result.size() == 15) return true;
+
+        for (int c = 0; c < 81; c++) {
+            if (usedLocal[c]) continue;
+
+            usedLocal[c] = true;
+            result.add(c);
+
+            // VISUALIZE: prefer passing Card object if you have one; otherwise pass string
+            if (viz != null) {
+                // create a temporary Card to show full toString() if needed, otherwise pass id string
+                try {
+                    Card tmp = new Card(c);           // you already have Card(int) in code
+                    viz.onAddCard(tmp);              // Visualizer has onAddCard(Card)
+                } catch (Exception e) {
+                    viz.onAddCard(String.valueOf(c));
+                }
+            }
+
+            if (backtrackViz(result, usedLocal)) return true;
+
+            // BACKTRACK
+            result.remove(result.size() - 1);
+            usedLocal[c] = false;
+
+            if (viz != null) {
+                try {
+                    Card tmp = new Card(c);
+                    viz.onRemoveCard(tmp);
+                } catch (Exception e) {
+                    viz.onRemoveCard(String.valueOf(c));
+                }
+            }
+        }
+        return false;
+    }
+
+    public void main(String[] args){
         // Card card1 = new Card();
         // Card card2 = new Card();
         // Card card3 = getThird(card1, card2);
@@ -421,10 +485,12 @@ public class SetManager {
         //     System.out.println(test.getFill());
         //     System.out.println(test.getNumber());
         // }
+
+        // for testing
         List<Card> board = generateBoard();
         Arrays.fill(used, false);
         for(Card test : board){
             System.out.println(test.getShape()+" "+test.getColor()+" "+test.getFill()+" "+test.getNumber());
-        }
+        }   
     }
 }
