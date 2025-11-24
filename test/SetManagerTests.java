@@ -19,7 +19,7 @@ public class SetManagerTests {
     private SetManager manager;
     private List<Card> board;
     private Guess check;
-    private static final int EXPECTED_BOARD_SIZE = 12;
+    private static final int EXPECTED_BOARD_SIZE = 15;
     private static final int EXPECTED_NUMBER_OF_SETS = 6;
 
     @BeforeEach

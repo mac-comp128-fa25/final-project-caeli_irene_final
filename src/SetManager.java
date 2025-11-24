@@ -79,7 +79,7 @@ public class SetManager {
      * pos: current position in the board (0-11)
      */
     private boolean fillBoard(int pos) {
-        if (pos == 12) {
+        if (pos == 15) {
             // Board full, must have exactly 6 sets
             return checkSets(board) == 6;
         }
@@ -165,7 +165,7 @@ public class SetManager {
         //     board.add(new Card(id));
         // }
 
-        if (board.size() >= 12) return;  // never exceed 12 cards
+        if (board.size() >= 15) return;  // CHANGED 12 to 15 cards
 
         if (board.size() < 2) return;
 
