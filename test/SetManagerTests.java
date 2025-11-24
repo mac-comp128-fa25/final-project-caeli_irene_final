@@ -19,6 +19,8 @@ public class SetManagerTests {
     private SetManager manager;
     private List<Card> board;
     private Guess check;
+    private static final int EXPECTED_BOARD_SIZE = 12;
+    private static final int EXPECTED_NUMBER_OF_SETS = 6;
 
     @BeforeEach
     public void setUp() {
@@ -32,7 +34,7 @@ public class SetManagerTests {
     /*
      * This makes the test file runnable
      */
-    //@Test
+    // @Test
     // void testManagerInitializesWithCards() {
     //     assertFalse(manager.getCurrentCards().isEmpty(), "Manager should initialize with cards on board");
     // }
@@ -64,37 +66,67 @@ public class SetManagerTests {
      * all selected cards are on the board
      * the list has no duplicates
      */
-    // private void checkSelectedCardsValidity() {
-    //     List<Card> selected = manager.getSelectedCards();
-    //     Map<Point, Card> boardCards = manager.getCurrentCards();
+    //  private void checkSelectedCardsValidity() {
+    //      List<Card> selected = manager.getSelectedCards();
+    //      Map<Point, Card> boardCards = manager.getCurrentCards();
 
-    //     assertTrue(selected.size() <= 3, "More than 3 cards selected");
+    //      assertTrue(selected.size() <= 3, "More than 3 cards selected");
 
-    //     for (Card card : selected) {
-    //         assertTrue(boardCards.containsValue(card),
-    //             "Selected card not found on board: " + card);
-    //     }
+    //      for (Card card : selected) {
+    //          assertTrue(boardCards.containsValue(card),
+    //              "Selected card not found on board: " + card);
+    //      }
 
-    //     Set<Card> unique = new HashSet<>(selected);
-    //     assertEquals(unique.size(), selected.size(), "Duplicate selected cards found");
+    //      Set<Card> unique = new HashSet<>(selected);
+    //      assertEquals(unique.size(), selected.size(), "Duplicate selected cards found");
     // }
 
+    /**
+     * Generates all 220 combinations of 3 cards taken from 12
+     * CHANGED the loop already checks i<j<k so if(i==j || j==k || i==k) will never be true
+     * reformatted the test with helper methods
+     */
+
+    // @Test
+    // public void testBoard(){
+    //     assertEquals(12, board.size());
+    //     int sets = 0;
+    //     for(int i=0; i<10;i++){
+    //         for(int j=i+1; j<11; j++){
+    //             for (int k=j+1; k<12;k++){
+    //                 if(i==j || j==k || i==k){
+    //                 } else {
+    //                     if(check.isValidSet(board.get(i),board.get(j),board.get(k))){
+    //                         sets++;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     assertEquals(6, sets);
+
     @Test
-    void testBoard(){
-        assertEquals(12, board.size());
+    public void testBoardHasCorrectSizeAndSets() {
+        assertEquals(EXPECTED_BOARD_SIZE, board.size(), "Board should have 12 cards");
+
+        int foundSets = countValidSets(board);
+        assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
+    }
+
+    /** Counts all valid sets of 3 cards in the board using the Guess checker. */
+    private int countValidSets(List<Card> cards) {
         int sets = 0;
-        for(int i=0; i<10;i++){
-            for(int j=i+1; j<11; j++){
-                for (int k=j+1; k<12;k++){
-                    if(i==j || j==k || i==k){
-                    } else {
-                        if(check.isValidSet(board.get(i),board.get(j),board.get(k))){
-                            sets++;
-                        }
+        int n = cards.size();
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    if (check.isValidSet(cards.get(i), cards.get(j), cards.get(k))) {
+                        sets++;
                     }
                 }
             }
         }
-        assertEquals(6, sets);
+        return sets;
     }
 }
+

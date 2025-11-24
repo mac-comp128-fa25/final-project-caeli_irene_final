@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import edu.macalester.graphics.Point;
 import java.util.Random;
+import java.util.Set;
 import java.util.Iterator;
 
 public class SetManager {
@@ -25,38 +27,71 @@ public class SetManager {
     }
 
     public List<Card> generateBoard(){
+        
         board = new ArrayList<>();
-        int set = 0;
-        int stop = 0;
-        addCard(board);
-        addCard(board);
-        addCard(board);
-        addCard(board);
-        while(set<6 && stop < 100){
-            if(board.size()>=12){
-                board.remove(random.nextInt(11));
-                addSet(board);
+        Arrays.fill(used, false);
+
+        Random rand = new Random();
+
+        // Step 1: Add 3 random unique cards
+        while (board.size() < 3) {
+            int id = rand.nextInt(81);
+            if (!used[id]) {
+                board.add(new Card(id));
+                used[id] = true;
             }
-            int ran = random.nextInt(10);
-            if(ran<3){
-                addCard(board);
-            } else{
-                addSet(board);
-            }
-            set = checkSets(board);
-            stop++;
         }
-        stop = 0;
-        while(board.size()<12 && stop < 100){
-            List<String> card = cards.getNextCard();
-            board.add(new Card(card.get(0), card.get(1), card.get(2), Integer.valueOf(card.get(3))));
-            set = checkSets(board);
-            if(set > 6){
-                board.remove(board.size()-1);
+
+        // Step 2: Add remaining cards by creating new sets from existing ones
+        while (board.size() < 12) {
+            // Pick two different random cards already on board
+            Card c1 = board.get(rand.nextInt(board.size()));
+            Card c2 = board.get(rand.nextInt(board.size()));
+            if (c1.equals(c2)) continue;
+
+            // Generate third card
+            Card c3 = getThird(c1, c2);
+            int id = getCardID(c3);
+
+            if (!used[id]) {
+                board.add(new Card(id));
+                used[id] = true;
             }
-            stop++;
         }
+
         return board;
+
+        // int set = 0;
+        // int stop = 0;
+        // addCard(board);
+        // addCard(board);
+        // addCard(board);
+        // addCard(board);
+        // while(set<6 && stop < 100){
+        //     if(board.size()>12){
+        //         board.remove(random.nextInt(11));
+        //         addSet(board);
+        //     }
+        //     int ran = random.nextInt(10);
+        //     if(ran<3){
+        //         addCard(board);
+        //     } else{
+        //         addSet(board);
+        //     }
+        //     set = checkSets(board);
+        //     stop++;
+        // }
+        // stop = 0;
+        // while(board.size()<12 && stop < 100){
+        //     List<String> card = cards.getNextCard();
+        //     board.add(new Card(card.get(0), card.get(1), card.get(2), Integer.valueOf(card.get(3))));
+        //     set = checkSets(board);
+        //     if(set > 6){
+        //         board.remove(board.size()-1);
+        //     }
+        //     stop++;
+        // }
+        // return board;
     }
 
     //CHANGED add set method
