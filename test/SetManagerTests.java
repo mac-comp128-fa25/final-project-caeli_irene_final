@@ -148,7 +148,7 @@ public class SetManagerTests {
             // check number of valid sets
             int foundSets = countValidSets(board);
             assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
-        }
+       }
     }
 }
 
