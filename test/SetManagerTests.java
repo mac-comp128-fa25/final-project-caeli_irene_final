@@ -113,7 +113,7 @@ public class SetManagerTests {
         assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
     }
 
-    /** Counts all valid sets of 3 cards in the board using the Guess checker. */
+    // Counts all valid sets of 3 cards in the board using the Guess checker. */
     private int countValidSets(List<Card> cards) {
         int sets = 0;
         int n = cards.size();
@@ -127,6 +127,28 @@ public class SetManagerTests {
             }
         }
         return sets;
+    }
+
+    @Test
+    public void testBoardMultipleTimes() {
+        final int TRIALS = 50;  // test 50 generated boards
+        for (int t = 0; t < TRIALS; t++) {
+            List<Card> board = manager.generateBoard();
+
+            // check board size
+            assertEquals(EXPECTED_BOARD_SIZE, board.size(), "Board should have 12 cards");
+
+            // check for duplicate cards
+            Set<Integer> seenIds = new HashSet<>();
+            for (Card c : board) {
+                int id = manager.getCardID(c);
+                assertTrue(seenIds.add(id), "Duplicate card found on board: " + id);
+            }
+
+            // check number of valid sets
+            int foundSets = countValidSets(board);
+            assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
+        }
     }
 }
 

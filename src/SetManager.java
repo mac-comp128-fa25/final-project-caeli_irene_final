@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,36 +32,15 @@ public class SetManager {
         board = new ArrayList<>();
         Arrays.fill(used, false);
 
-        Random rand = new Random();
-
-        // Step 1: Add 3 random unique cards
-        while (board.size() < 3) {
-            int id = rand.nextInt(81);
-            if (!used[id]) {
-                board.add(new Card(id));
-                used[id] = true;
-            }
+        boolean success = fillBoard(0);
+        if (!success) {
+            throw new RuntimeException("Failed to generate a valid board");
         }
 
-        // Step 2: Add remaining cards by creating new sets from existing ones
-        while (board.size() < 12) {
-            // Pick two different random cards already on board
-            Card c1 = board.get(rand.nextInt(board.size()));
-            Card c2 = board.get(rand.nextInt(board.size()));
-            if (c1.equals(c2)) continue;
+        return new ArrayList<>(board);
 
-            // Generate third card
-            Card c3 = getThird(c1, c2);
-            int id = getCardID(c3);
 
-            if (!used[id]) {
-                board.add(new Card(id));
-                used[id] = true;
-            }
-        }
-
-        return board;
-
+        //ORIGINAL
         // int set = 0;
         // int stop = 0;
         // addCard(board);
@@ -94,6 +74,66 @@ public class SetManager {
         // return board;
     }
 
+    /**
+     * Recursive function to fill the board
+     * pos: current position in the board (0-11)
+     */
+    private boolean fillBoard(int pos) {
+        if (pos == 12) {
+            // Board full; must have exactly 6 sets
+            return checkSets(board) == 6;
+        }
+
+        // Shuffle all unused card IDs
+        List<Integer> candidates = new ArrayList<>();
+        for (int i = 0; i < 81; i++) {
+            if (!used[i]) candidates.add(i);
+        }
+        Collections.shuffle(candidates, random);
+
+        for (int id : candidates) {
+            Card c = new Card(id);
+            board.add(c);
+            used[id] = true;
+
+            int setsNow = checkSets(board);
+            if (setsNow <= 6) { // don't allow more than 6 sets
+                if (fillBoard(pos + 1)) {
+                    return true; // solution found
+                }
+            }
+
+            // Backtrack
+            board.remove(board.size() - 1);
+            used[id] = false;
+        }
+
+        return false; // no valid card could be placed here
+    }
+
+    //CHANGED add get next valid card to handle edge cases and make sure we never have null cards
+    private Card getNextValidCard() {
+        // Try random IDs first
+        int tries = 0;
+        while (tries < 81) {
+            int id = random.nextInt(81);
+            if (!used[id]) {
+                used[id] = true;
+                return new Card(id);
+            }
+            tries++;
+        }
+        // Fallback: scan all IDs
+        for (int i = 0; i < 81; i++) {
+            if (!used[i]) {
+                used[i] = true;
+                return new Card(i);
+            }
+        }
+        // Absolute fallback (should never happen)
+        return new Card(0);
+    }
+
     //CHANGED add set method
     // private void addSet(List<Card> board){
     //     int ran1 = random.nextInt(board.size()-1);
@@ -108,22 +148,42 @@ public class SetManager {
     //     } 
     // }
     private void addSet(List<Card> board){
-        int i = random.nextInt(board.size());
-        int j = random.nextInt(board.size());
-        while(i == j) j = random.nextInt(board.size());
+        // int i = random.nextInt(board.size());
+        // int j = random.nextInt(board.size());
+        // while(i == j) j = random.nextInt(board.size());
 
-        Card c1 = board.get(i);
-        Card c2 = board.get(j);
+        // Card c1 = board.get(i);
+        // Card c2 = board.get(j);
+
+        // Card c3 = getThird(c1, c2);
+
+        // // compute the ID of c3 so we prevent duplicates
+        // int id = getCardID(c3);   // You will add this helper below
+
+        // if(!used[id]) {
+        //     used[id] = true;
+        //     board.add(new Card(id));
+        // }
+
+        if (board.size() >= 12) return;  // never exceed 12 cards
+
+        if (board.size() < 2) return;
+
+        Card c1 = board.get(random.nextInt(board.size()));
+        Card c2 = board.get(random.nextInt(board.size()));
+        while (c1.equals(c2)) {
+            c2 = board.get(random.nextInt(board.size()));
+        }
 
         Card c3 = getThird(c1, c2);
 
-        // compute the ID of c3 so we prevent duplicates
-        int id = getCardID(c3);   // You will add this helper below
-
-        if(!used[id]) {
-            used[id] = true;
-            board.add(new Card(id));
+        if (c3 == null || used[getCardID(c3)]) {
+            c3 = getNextValidCard();
+        } else {
+            used[getCardID(c3)] = true;
         }
+
+        board.add(c3);
     }
 
     //CHANGED add card method
@@ -135,27 +195,26 @@ public class SetManager {
     //     }
     // }
     private void addCard(List<Card> board){
-        // choose an unused id
-        int id = random.nextInt(81);
-        while(used[id]) {
-            id = random.nextInt(81);
-        }
-        used[id] = true;
-        board.add(new Card(id));
+        // // choose an unused id
+        // int id = random.nextInt(81);
+        // while(used[id]) {
+        //     id = random.nextInt(81);
+        // }
+        // used[id] = true;
+        // board.add(new Card(id));
+        
+        board.add(getNextValidCard());
     }
 
     //CHANGED add get card id method -> could also be in Card (helper method for add card)
 
-    private int getCardID(Card c) {
+    public int getCardID(Card c) {
         int shape  = List.of("Oval","Diamond","Squiggle").indexOf(c.getShape());
         int color  = List.of("Red","Green","Purple").indexOf(c.getColor());
         int fill   = List.of("Empty","Solid","Striped").indexOf(c.getFill());
         int number = c.getNumber() - 1;  // convert 1-3 → 0-2
 
-        return shape 
-            + 3 * color
-            + 9 * fill
-            + 27 * number;
+        return shape + 3 * color + 9 * fill + 27 * number;
     }
 
 
@@ -171,7 +230,7 @@ public class SetManager {
     }
 
     private int checkSets(List<Card> board){
-        int sets = 0;
+        int setCount = 0;
         this.sets.clear();
         for(int i=0; i<board.size()-2;i++){
             for(int j=i+1; j<board.size()-1; j++){
@@ -179,14 +238,15 @@ public class SetManager {
                     if(i==j || j==k || i==k){
                     } else {
                         if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
-                            sets++;
+                            setCount++;
                             this.sets.add(List.of(board.get(i).toString(),board.get(j).toString(),board.get(k).toString()));
                         }
                     }
                 }
             }
         }
-        return sets;
+        return setCount;
+    
     }
 
     /*
