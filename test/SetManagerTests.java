@@ -141,7 +141,7 @@ public class SetManagerTests {
             // check for duplicate cards
             Set<Integer> seenIds = new HashSet<>();
             for (Card c : board) {
-                int id = manager.getCardID(c);
+                int id = c.getId();
                 assertTrue(seenIds.add(id), "Duplicate card found on board: " + id);
             }
 

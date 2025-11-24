@@ -19,6 +19,7 @@ public class Card {
     private Point position; // this is the position in the HashMap
     private boolean isSelected; // whether the card is selected by the player
     private Random random = new Random();
+    private int id;
 
     // CHANGED add static arrays so constructors can reference reliably
     private static final String[] SHAPES = {"Oval", "Diamond", "Squiggle"};
@@ -43,6 +44,7 @@ public class Card {
         this.number = number;
         this.graphic = new CardGraphics(shape, color, fill, number);
         this.isSelected = false; // default not selected
+        this.id = List.of(SHAPES).indexOf(shape)+List.of(COLORS).indexOf(color)*3+List.of(FILLS).indexOf(fill)*9+(number-1)*27;
     }
 
     // CHANGED random card constructor
@@ -57,6 +59,7 @@ public class Card {
         this.number = random.nextInt(3) + 1;
         this.graphic = new CardGraphics(shape, color, fill, number);
         this.isSelected = false;
+        this.id = List.of(SHAPES).indexOf(shape)+List.of(COLORS).indexOf(color)*3+List.of(FILLS).indexOf(fill)*9+(number-1)*27;
     }
 
     //CHANGED generate card based on ID not randomly (so we can have more control without using a full deck)
@@ -75,10 +78,10 @@ public class Card {
         this.number = ((id / 27) % 3) + 1;  // 1,2,3
         this.graphic = new CardGraphics(shape, color, fill, number);
         this.isSelected = false;
+        this.id = id;
     }
 
     public String thirdShape(Card other){
-        //List<String> tempShapes = new ArrayList<>(shapes);
         List<String> tempShapes = new ArrayList<>(List.of(SHAPES));
         tempShapes.remove(this.shape);
         tempShapes.remove(other.getShape());
@@ -86,7 +89,6 @@ public class Card {
     }
 
     public String thirdColor(Card other){
-        //List<String> tempColor = new ArrayList<>(colors);
         List<String> tempColor = new ArrayList<>(List.of(COLORS));
         tempColor.remove(this.color);
         tempColor.remove(other.getColor());
@@ -94,20 +96,13 @@ public class Card {
     }
 
     public String thirdFill(Card other){
-        //List<String> tempFill = new ArrayList<>(fills);
         List<String> tempFill = new ArrayList<>(List.of(FILLS));
         tempFill.remove(this.fill);
         tempFill.remove(other.getFill());
         return tempFill.get(0);
     }
 
-    //CHANGED use string equals instead of ==
     public boolean isEqual(Card other){
-        // boolean shape = (this.shape==other.getShape()); 
-        // boolean color = (this.color==other.getColor());
-        // boolean fill = (this.fill==other.getFill());
-        // boolean num = (this.number==other.getNumber());
-        // return shape && color && fill && num;
         if (other == null) return false;
         boolean shapeEq = this.shape.equals(other.getShape());
         boolean colorEq = this.color.equals(other.getColor());
@@ -167,6 +162,10 @@ public class Card {
         return position;
     }
 
+    public int getId(){
+        return id;
+    }
+
     //Sets the selected state of the card and updates its graphic accordingly.
     public void setSelected(boolean selected) {
         this.isSelected = selected;
@@ -187,16 +186,19 @@ public class Card {
 
    
     // for testing
-    // public static void main(String arg[]){
-    //     Card test = new Card();
-    //     System.out.println(test.getShape());
-    //     System.out.println(test.getColor());
-    //     System.out.println(test.getFill());
-    //     System.out.println(test.getNumber());;
-    //     //CHANGED add card id to main
-    //     Card byId = new Card(35);
-    //     System.out.println("id35 -> " + byId);
-    // }
+    public static void main(String arg[]){
+        // Card test = new Card();
+        // System.out.println(test.getShape());
+        // System.out.println(test.getColor());
+        // System.out.println(test.getFill());
+        // System.out.println(test.getNumber());;
+        //CHANGED add card id to main
+        for (int i: List.of(0,1,2,3,4,5,6,7,8,9)){
+            System.out.println(new Card(i));
+        }
+        // Card byId = new Card(15);
+        // System.out.println("id35 -> " + byId);
+    }
 
     
 }

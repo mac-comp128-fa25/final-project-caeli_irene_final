@@ -22,7 +22,7 @@ public class SetManager {
     private List<Card> board;
     private Random random = new Random();
     private final boolean[] used = new boolean[81]; //CHANGED add used card
-    Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
+    //Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
     
 
     public SetManager(GameBoard gameBoard) { 
@@ -32,9 +32,9 @@ public class SetManager {
     }
 
     //CHANGED VIZUALIZER
-    public void setVisualizer(Visualizer viz) {
-        this.viz = viz;
-    }
+    // public void setVisualizer(Visualizer viz) {
+    //     this.viz = viz;
+    // }
 
     public List<Card> generateBoard(){
         
@@ -118,7 +118,7 @@ public class SetManager {
             board.add(c); // place it on board
             used[id] = true; // mark it as used
 
-            viz.onAddCard(c.toString()); // CHANGED pass card added to vizualizer
+            
 
 
             int setsNow = checkSets(board); // how many sets currently present
@@ -235,17 +235,6 @@ public class SetManager {
     //     board.add(getNextValidCard());
     // }
 
-    //CHANGED add get card id method -> could also be in Card (helper method for add card)
-
-    public int getCardID(Card c) {
-        int shape  = List.of("Oval","Diamond","Squiggle").indexOf(c.getShape());
-        int color  = List.of("Red","Green","Purple").indexOf(c.getColor());
-        int fill   = List.of("Empty","Solid","Striped").indexOf(c.getFill());
-        int number = c.getNumber() - 1;  // convert 1-3 → 0-2
-
-        return shape + 3 * color + 9 * fill + 27 * number;
-    }
-
     // addCard, addSet helper -> replaced by fill board
     // private boolean checkCard(List<Card> board, Card test){
     //     Iterator<Card> iter = board.iterator();
@@ -258,24 +247,16 @@ public class SetManager {
     //     return false;
     // }
 
-    /**
-     * CHANGED
-     * will never get to i=j=k condition
-     * remove sets since it's used in add sets and add card
-     */
+    
     private int checkSets(List<Card> board){
         int setCount = 0;
         //this.sets.clear();
         for(int i=0; i<board.size()-2;i++){
             for(int j=i+1; j<board.size()-1; j++){
                 for (int k=j+1; k<board.size();k++){
-                    //if(i==j || j==k || i==k){ //this condition will never be reached!
-                    //} else {
-                        if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
+                    if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
                             setCount++;
-                            //this.sets.add(List.of(board.get(i).toString(),board.get(j).toString(),board.get(k).toString()));
-                        }
-                    //}
+                    }
                 }
             }
         }
@@ -426,54 +407,54 @@ public class SetManager {
     }
 
     
-    public List<Integer> generateBoardIDsForViz() {
-        List<Integer> result = new ArrayList<>();
-        boolean[] usedLocal = new boolean[81];
-        backtrackViz(result, usedLocal);
-        return result;
-    }
+    // public List<Integer> generateBoardIDsForViz() {
+    //     List<Integer> result = new ArrayList<>();
+    //     boolean[] usedLocal = new boolean[81];
+    //     backtrackViz(result, usedLocal);
+    //     return result;
+    // }
 
     
 
 
-    private boolean backtrackViz(List<Integer> result, boolean[] usedLocal) {
-        // target size 12 (standard Set board)
-        if (result.size() == 15) return true;
+    // private boolean backtrackViz(List<Integer> result, boolean[] usedLocal) {
+    //     // target size 12 (standard Set board)
+    //     if (result.size() == 15) return true;
 
-        for (int c = 0; c < 81; c++) {
-            if (usedLocal[c]) continue;
+    //     for (int c = 0; c < 81; c++) {
+    //         if (usedLocal[c]) continue;
 
-            usedLocal[c] = true;
-            result.add(c);
+    //         usedLocal[c] = true;
+    //         result.add(c);
 
-            // VISUALIZE: prefer passing Card object if you have one; otherwise pass string
-            if (viz != null) {
-                // create a temporary Card to show full toString() if needed, otherwise pass id string
-                try {
-                    Card tmp = new Card(c);           // you already have Card(int) in code
-                    viz.onAddCard(tmp);              // Visualizer has onAddCard(Card)
-                } catch (Exception e) {
-                    viz.onAddCard(String.valueOf(c));
-                }
-            }
+    //         // VISUALIZE: prefer passing Card object if you have one; otherwise pass string
+    //         if (viz != null) {
+    //             // create a temporary Card to show full toString() if needed, otherwise pass id string
+    //             try {
+    //                 Card tmp = new Card(c);           // you already have Card(int) in code
+    //                 viz.onAddCard(tmp);              // Visualizer has onAddCard(Card)
+    //             } catch (Exception e) {
+    //                 viz.onAddCard(String.valueOf(c));
+    //             }
+    //         }
 
-            if (backtrackViz(result, usedLocal)) return true;
+    //         if (backtrackViz(result, usedLocal)) return true;
 
-            // BACKTRACK
-            result.remove(result.size() - 1);
-            usedLocal[c] = false;
+    //         // BACKTRACK
+    //         result.remove(result.size() - 1);
+    //         usedLocal[c] = false;
 
-            if (viz != null) {
-                try {
-                    Card tmp = new Card(c);
-                    viz.onRemoveCard(tmp);
-                } catch (Exception e) {
-                    viz.onRemoveCard(String.valueOf(c));
-                }
-            }
-        }
-        return false;
-    }
+    //         if (viz != null) {
+    //             try {
+    //                 Card tmp = new Card(c);
+    //                 viz.onRemoveCard(tmp);
+    //             } catch (Exception e) {
+    //                 viz.onRemoveCard(String.valueOf(c));
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
 
     public void main(String[] args){
         // Card card1 = new Card();
