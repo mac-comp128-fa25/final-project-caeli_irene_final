@@ -175,23 +175,23 @@ public class SetManager {
     //         cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
     //     } 
     // }
-    // private void addSet(List<Card> board){
-    //     // int i = random.nextInt(board.size());
-    //     // int j = random.nextInt(board.size());
-    //     // while(i == j) j = random.nextInt(board.size());
+    // private void generateSet(List<Card> board){
+    //     int i = random.nextInt(board.size());
+    //     int j = random.nextInt(board.size());
+    //     while(i == j) j = random.nextInt(board.size());
 
-    //     // Card c1 = board.get(i);
-    //     // Card c2 = board.get(j);
+    //     Card c1 = board.get(i);
+    //     Card c2 = board.get(j);
 
-    //     // Card c3 = getThird(c1, c2);
+    //     Card c3 = getThird(c1, c2);
 
-    //     // // compute the ID of c3 so we prevent duplicates
-    //     // int id = getCardID(c3);   // You will add this helper below
+    //     // compute the ID of c3 so we prevent duplicates
+    //     int id = getCardID(c3);   // You will add this helper below
 
-    //     // if(!used[id]) {
-    //     //     used[id] = true;
-    //     //     board.add(new Card(id));
-    //     // }
+    //     if(!used[id]) {
+    //         used[id] = true;
+    //         board.add(new Card(id));
+    //     }
 
     //     if (board.size() >= 15) return;  // CHANGED 12 to 15 cards
 
@@ -205,7 +205,7 @@ public class SetManager {
 
     //     Card c3 = getThird(c1, c2);
 
-    //     if (c3 == null || used[getCardID(c3)]) {
+    //     if (c3 == null || used[c3.getId()]) {
     //         c3 = getNextValidCard();
     //     } else {
     //         used[getCardID(c3)] = true;
@@ -250,7 +250,6 @@ public class SetManager {
     
     private int checkSets(List<Card> board){
         int setCount = 0;
-        //this.sets.clear();
         for(int i=0; i<board.size()-2;i++){
             for(int j=i+1; j<board.size()-1; j++){
                 for (int k=j+1; k<board.size();k++){
@@ -262,6 +261,21 @@ public class SetManager {
         }
         return setCount;
     
+    }
+
+    private Card[] generateSet(){
+        Card[] tempCards = new Card[3];
+        tempCards[0] = new Card();
+        tempCards[1] = new Card();
+        tempCards[2] = getThird(tempCards[0], tempCards[1]);
+        return tempCards;
+    }
+
+    private Card[] generateSet(Card card1){
+        Card[] tempCards = new Card[2];
+        tempCards[0] = new Card();
+        tempCards[1] = getThird(card1, tempCards[0]);
+        return tempCards;
     }
 
     public Card getThird(Card card1, Card card2){
