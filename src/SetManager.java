@@ -80,11 +80,11 @@ public class SetManager {
      */
     private boolean fillBoard(int pos) {
         if (pos == 12) {
-            // Board full; must have exactly 6 sets
+            // Board full, must have exactly 6 sets
             return checkSets(board) == 6;
         }
 
-        // Shuffle all unused card IDs
+        // shuffle all unused card IDs
         List<Integer> candidates = new ArrayList<>();
         for (int i = 0; i < 81; i++) {
             if (!used[i]) candidates.add(i);
@@ -123,7 +123,7 @@ public class SetManager {
             }
             tries++;
         }
-        // Fallback: scan all IDs
+        // if that takes too long -> go through all IDs
         for (int i = 0; i < 81; i++) {
             if (!used[i]) {
                 used[i] = true;
