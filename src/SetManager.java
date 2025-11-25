@@ -13,13 +13,16 @@ import java.util.Iterator;
 
 public class SetManager {
 
-    private final Map<Point, Card> currentCards = new HashMap();
+    private final Map<Point, Card> currentCards = new HashMap<>();
     private ArrayList<Card> selectedCards; 
     private GameBoard gameBoard;
     private Guess guess = new Guess();
     //private Deck cards = new Deck(); stopped using a deck
     //private List<List<String>> sets = new ArrayList<>(); stopped tracking sets -> used in checkSets
     private List<Card> board;
+    private int[][] graph = new int[12][12];
+    private Map<Card, Integer> graphPoint = new HashMap<>();
+    private int iterate = 0;
     private Random random = new Random();
     private final boolean[] used = new boolean[81]; //CHANGED add used card
     //Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
@@ -41,7 +44,7 @@ public class SetManager {
         board = new ArrayList<>();
         Arrays.fill(used, false); // reset used cards so all 81 IDs are used
 
-        boolean success = fillBoard(0); // find first slot at pos=0
+        boolean success = boardFill(); // find first slot at pos=0
         if (!success) { // if recusion fails throw an exception
             throw new RuntimeException("Failed to generate a valid board");
         }
@@ -117,22 +120,15 @@ public class SetManager {
             Card c = new Card(id); //convert id to card object
             board.add(c); // place it on board
             used[id] = true; // mark it as used
-
-            
-
-
             int setsNow = checkSets(board); // how many sets currently present
             if (setsNow <= 6) { // don't allow more than 6 sets
                 if (fillBoard(pos + 1)) { // call fill board again to add an extra card
                     return true; // solution found
                 }
             }
-
             // if we have more than 6 sets -> backtrack
             board.remove(board.size() - 1);
             used[id] = false;
-
-
         }
 
         return false; // this path leads to no valid 6 set arrangements -> throws an exception in generate board
@@ -247,6 +243,66 @@ public class SetManager {
     //     return false;
     // }
 
+    private boolean boardFill(){
+        int ran = random.nextInt(3);
+        if(board.size()==12 && checkSets(board)==6){
+            return true;
+        }
+        if(checkSets(board)==6){
+            getUnconnected();
+            return boardFill();
+        }
+        if(12-board.size()==6-checkSets(board)){
+            ran = 2;
+        } 
+        if((12-board.size())/3<(6-checkSets(board))){
+            //1,2,3
+            if(ran==0){
+                ran = 1; //CHANGE
+            }
+        } 
+        if(board.size()==10){
+            //1,2,3
+            if(ran==0){
+                ran = 1; //CHANGE
+            }
+        }
+        if(board.size()==11){
+            //2,3
+            if(ran<2){
+                ran = ran+2;
+            }
+        } 
+        if(board.size()<2){
+            // 0,3
+            if(ran==1 || ran==2){
+                ran = 3; //CHANGE
+            }
+        }
+        if(ran==0){
+            generateSet();
+            return boardFill();
+        }
+        if(ran==1){
+            int a = random.nextInt(board.size()-1);
+            generateSet(board.get(a));
+            return boardFill();
+        }
+        if(ran==2){
+            int a = random.nextInt(board.size()-1);
+            int b = random.nextInt(board.size()-1);
+            while(a==b || checkIfSet(board.get(a),board.get(b))){
+                b = random.nextInt(board.size()-1);
+            }
+            getThird(board.get(a), board.get(b));
+            return boardFill();
+        }
+        if(ran==3){
+            getUnconnected();
+            return boardFill();
+        }
+        return false;
+    }
     
     private int checkSets(List<Card> board){
         int setCount = 0;
@@ -254,7 +310,13 @@ public class SetManager {
             for(int j=i+1; j<board.size()-1; j++){
                 for (int k=j+1; k<board.size();k++){
                     if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
-                            setCount++;
+                        setCount++;
+                        graph[graphPoint.get(board.get(i))][graphPoint.get(board.get(j))] = 1;
+                        graph[graphPoint.get(board.get(i))][graphPoint.get(board.get(k))] = 1;
+                        graph[graphPoint.get(board.get(j))][graphPoint.get(board.get(i))] = 1;
+                        graph[graphPoint.get(board.get(j))][graphPoint.get(board.get(k))] = 1;
+                        graph[graphPoint.get(board.get(k))][graphPoint.get(board.get(i))] = 1;
+                        graph[graphPoint.get(board.get(k))][graphPoint.get(board.get(j))] = 1;
                     }
                 }
             }
@@ -263,22 +325,29 @@ public class SetManager {
     
     }
 
-    private Card[] generateSet(){
-        Card[] tempCards = new Card[3];
-        tempCards[0] = new Card();
-        tempCards[1] = new Card();
-        tempCards[2] = getThird(tempCards[0], tempCards[1]);
-        return tempCards;
-    }
-
-    private Card[] generateSet(Card card1){
+    private void generateSet(){
         Card[] tempCards = new Card[2];
         tempCards[0] = new Card();
-        tempCards[1] = getThird(card1, tempCards[0]);
-        return tempCards;
+        tempCards[1] = new Card();
+        getThird(tempCards[0], tempCards[1]);
+        for(Card temp:tempCards){
+            board.add(temp);
+            graphPoint.put(temp, iterate);
+            iterate++;
+            used[temp.getId()] = true;
+        }
     }
 
-    public Card getThird(Card card1, Card card2){
+    private void generateSet(Card card1){
+        Card temp = new Card();
+        getThird(card1, temp);
+        board.add(temp);
+        graphPoint.put(temp, iterate);
+        iterate++;
+        used[temp.getId()] = true;
+    }
+
+    public void getThird(Card card1, Card card2){
         String color;
         String shape;
         String fill;
@@ -303,7 +372,69 @@ public class SetManager {
         } else{
             num = 6-card1.getNumber()-card2.getNumber();
         }
-        return new Card(shape, color, fill, num);
+        Card temp = new Card(shape, color, fill, num);
+        board.add(temp);
+        graphPoint.put(temp, iterate);
+        iterate++;
+        used[temp.getId()] = true;
+    }
+
+    private void getUnconnected(){
+        List<Integer> candidates = new ArrayList<>(); // build a list of all unused card IDs
+        boolean[] connected = new boolean[81];
+        Iterator<Card> inter = board.iterator();
+        while(inter.hasNext()){
+            Card a = inter.next();
+            Iterator<Card> interB = board.iterator();
+            while(interB.hasNext()){
+                Card b = interB.next();
+                if(graph[graphPoint.get(a)][graphPoint.get(b)]==0){
+                    connected[getThirdId(a,b)]=true;
+                }
+            }
+        }
+        for (int i = 0; i < 81; i++) {
+            if ((!used[i])&&(!connected[i])) candidates.add(i);
+        }
+        Collections.shuffle(candidates, random);
+        Card temp = new Card(candidates.get(0));
+        board.add(temp);
+        graphPoint.put(temp, iterate);
+        iterate++;
+        used[temp.getId()] = true;
+    }
+
+    public int getThirdId(Card card1, Card card2){
+        String color;
+        String shape;
+        String fill;
+        int num;
+        if(card1.getColor()==card2.getColor()){
+            color = card1.getColor();
+        } else{
+            color = card1.thirdColor(card2);
+        }
+        if(card1.getShape()==card2.getShape()){
+            shape = card1.getShape();
+        } else{
+            shape = card1.thirdShape(card2);
+        }
+        if(card1.getFill()==card2.getFill()){
+            fill = card1.getFill();
+        } else{
+            fill = card1.thirdFill(card2);
+        }
+        if(card1.getNumber()==card2.getNumber()){
+            num = card1.getNumber();
+        } else{
+            num = 6-card1.getNumber()-card2.getNumber();
+        }
+        Card temp = new Card(shape, color, fill, num);
+        return temp.getId();
+    }
+
+    private boolean checkIfSet(Card a, Card b){
+        return graph[graphPoint.get(a)][graphPoint.get(b)]==1;
     }
 
     /**
