@@ -16,22 +16,21 @@ public class SetManager {
     private final Map<Point, Card> currentCards = new HashMap<>();
     private ArrayList<Card> selectedCards; 
     private GameBoard gameBoard;
-    private Guess guess = new Guess();
+    private static Guess guess = new Guess();
     //private Deck cards = new Deck(); stopped using a deck
     //private List<List<String>> sets = new ArrayList<>(); stopped tracking sets -> used in checkSets
-    private List<Card> board;
-    private int[][] graph = new int[12][12];
-    private Map<Card, Integer> graphPoint = new HashMap<>();
-    private int iterate = 0;
-    private Random random = new Random();
-    private final boolean[] used = new boolean[81]; //CHANGED add used card
+    public static List<Card> board;
+    private static int[][] graph = new int[12][12];
+    private static Map<Card, Integer> graphPoint = new HashMap<>();
+    private static int iterate = 0;
+    private static Random random = new Random();
+    private static final boolean[] used = new boolean[81]; //CHANGED add used card
     //Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
     
 
     public SetManager(GameBoard gameBoard) { 
         this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
-
     }
 
     //CHANGED VIZUALIZER
@@ -39,7 +38,7 @@ public class SetManager {
     //     this.viz = viz;
     // }
 
-    public List<Card> generateBoard(){
+    public static List<Card> generateBoard(){
         
         board = new ArrayList<>();
         Arrays.fill(used, false); // reset used cards so all 81 IDs are used
@@ -243,38 +242,47 @@ public class SetManager {
     //     return false;
     // }
 
-    private boolean boardFill(){
+    private static boolean boardFill(){
         int ran = random.nextInt(3);
-        if(board.size()==12 && checkSets(board)==6){
+        int sets = checkSets(board);
+        int size = board.size();
+        if(size==12 && sets==6){
+            System.out.println("Hit final, actual sets:"+sets+" size:"+size);
             return true;
         }
-        if(checkSets(board)==6){
+        if(sets==6){
+            System.out.println("Hit full sets, actual sets:"+sets+" size:"+size);
             getUnconnected();
             return boardFill();
         }
-        if(12-board.size()==6-checkSets(board)){
+        if((12-size)==(6-sets)){
+            System.out.println("Hit only get third, actual sets:"+sets+" size:"+size);
             ran = 2;
         } 
-        if((12-board.size())/3<(6-checkSets(board))){
+        if((12-size)==(7-sets)){
             //1,2,3
+            System.out.println("Hit everything but get set, actual sets:"+sets+" size:"+size);
             if(ran==0){
                 ran = 1; //CHANGE
             }
         } 
-        if(board.size()==10){
+        if(size==10){
             //1,2,3
+            System.out.println("Hit 10, actual sets:"+sets+" size:"+size);
             if(ran==0){
                 ran = 1; //CHANGE
             }
         }
-        if(board.size()==11){
+        if(size==11){
             //2,3
+            System.out.println("Hit 11, actual sets:"+sets+" size:"+size);
             if(ran<2){
                 ran = ran+2;
             }
         } 
-        if(board.size()<2){
+        if(size<2){
             // 0,3
+            System.out.println("Hit too small, actual sets:"+sets+" size:"+size);
             if(ran==1 || ran==2){
                 ran = 3; //CHANGE
             }
@@ -304,8 +312,9 @@ public class SetManager {
         return false;
     }
     
-    private int checkSets(List<Card> board){
+    public static int checkSets(List<Card> board){
         int setCount = 0;
+        System.out.println(board.size());
         for(int i=0; i<board.size()-2;i++){
             for(int j=i+1; j<board.size()-1; j++){
                 for (int k=j+1; k<board.size();k++){
@@ -325,7 +334,7 @@ public class SetManager {
     
     }
 
-    private void generateSet(){
+    public static void generateSet(){
         Card[] tempCards = new Card[2];
         tempCards[0] = new Card();
         tempCards[1] = new Card();
@@ -338,7 +347,7 @@ public class SetManager {
         }
     }
 
-    private void generateSet(Card card1){
+    public static void generateSet(Card card1){
         Card temp = new Card();
         getThird(card1, temp);
         board.add(temp);
@@ -347,7 +356,8 @@ public class SetManager {
         used[temp.getId()] = true;
     }
 
-    public void getThird(Card card1, Card card2){
+    public static void getThird(Card card1, Card card2){
+        System.out.println("Get third");
         String color;
         String shape;
         String fill;
@@ -373,28 +383,37 @@ public class SetManager {
             num = 6-card1.getNumber()-card2.getNumber();
         }
         Card temp = new Card(shape, color, fill, num);
-        board.add(temp);
-        graphPoint.put(temp, iterate);
-        iterate++;
-        used[temp.getId()] = true;
+        if(checkConnections(temp)){
+            board.add(temp);
+            graphPoint.put(temp, iterate);
+            iterate++;
+            used[temp.getId()] = true;
+        } else{
+            System.out.println("Removed");
+            for(int i=0; i<3;i++){
+                int ran = random.nextInt(board.size()-1);
+                board.remove(ran);
+            }
+            reset();
+        }
     }
 
-    private void getUnconnected(){
-        List<Integer> candidates = new ArrayList<>(); // build a list of all unused card IDs
-        boolean[] connected = new boolean[81];
-        Iterator<Card> inter = board.iterator();
-        while(inter.hasNext()){
-            Card a = inter.next();
-            Iterator<Card> interB = board.iterator();
-            while(interB.hasNext()){
-                Card b = interB.next();
-                if(graph[graphPoint.get(a)][graphPoint.get(b)]==0){
-                    connected[getThirdId(a,b)]=true;
-                }
-            }
+    public static void reset(){
+        iterate = 0;
+        graphPoint.clear();
+        Arrays.fill(used, false);
+        for(Card temp:board){
+            graphPoint.put(temp, iterate);
+            iterate++;
+            used[temp.getId()] = true;
         }
+    }
+
+    public static void getUnconnected(){
+        List<Integer> candidates = new ArrayList<>(); // build a list of all unused card IDs
+        int[] connected = getConnected();
         for (int i = 0; i < 81; i++) {
-            if ((!used[i])&&(!connected[i])) candidates.add(i);
+            if ((!used[i])&&(connected[i]==0)) candidates.add(i);
         }
         Collections.shuffle(candidates, random);
         Card temp = new Card(candidates.get(0));
@@ -404,7 +423,32 @@ public class SetManager {
         used[temp.getId()] = true;
     }
 
-    public int getThirdId(Card card1, Card card2){
+    public static int[] getConnected(){
+        int[] connected = new int[81];
+        Arrays.fill(connected, 0);
+        Iterator<Card> inter = board.iterator();
+        while(inter.hasNext()){
+            Card a = inter.next();
+            Iterator<Card> interB = board.iterator();
+            while(interB.hasNext()){
+                Card b = interB.next();
+                if(graph[graphPoint.get(a)][graphPoint.get(b)]==0){
+                    connected[getThirdId(a,b)]=connected[getThirdId(a,b)]+1;
+                }
+            }
+        }
+        return connected;
+    }
+
+    public static boolean checkConnections(Card c){
+        int[] connected = getConnected();
+        if(connected[c.getId()]>1){
+            return false;
+        }
+        return true;
+    }
+
+    public static int getThirdId(Card card1, Card card2){
         String color;
         String shape;
         String fill;
@@ -433,7 +477,7 @@ public class SetManager {
         return temp.getId();
     }
 
-    private boolean checkIfSet(Card a, Card b){
+    public static boolean checkIfSet(Card a, Card b){
         return graph[graphPoint.get(a)][graphPoint.get(b)]==1;
     }
 
@@ -601,7 +645,7 @@ public class SetManager {
     //     return false;
     // }
 
-    public void main(String[] args){
+    public static void main(String[] args){
         // Card card1 = new Card();
         // Card card2 = new Card();
         // Card card3 = getThird(card1, card2);

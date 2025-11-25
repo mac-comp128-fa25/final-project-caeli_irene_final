@@ -186,19 +186,19 @@ public class Card {
 
    
     // for testing
-    public static void main(String arg[]){
-        // Card test = new Card();
-        // System.out.println(test.getShape());
-        // System.out.println(test.getColor());
-        // System.out.println(test.getFill());
-        // System.out.println(test.getNumber());;
-        //CHANGED add card id to main
-        for (int i: List.of(0,1,2,3,4,5,6,7,8,9)){
-            System.out.println(new Card(i));
-        }
-        // Card byId = new Card(15);
-        // System.out.println("id35 -> " + byId);
-    }
+    // public static void main(String arg[]){
+    //     // Card test = new Card();
+    //     // System.out.println(test.getShape());
+    //     // System.out.println(test.getColor());
+    //     // System.out.println(test.getFill());
+    //     // System.out.println(test.getNumber());;
+    //     //CHANGED add card id to main
+    //     for (int i: List.of(0,1,2,3,4,5,6,7,8,9)){
+    //         System.out.println(new Card(i));
+    //     }
+    //     // Card byId = new Card(15);
+    //     // System.out.println("id35 -> " + byId);
+    // }
 
     
 }

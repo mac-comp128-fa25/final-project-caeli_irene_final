@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import edu.macalester.graphics.CanvasWindow;
@@ -18,6 +19,7 @@ public class SetManagerTests {
     private GameBoard Gameboard;
     private SetManager manager;
     private List<Card> board;
+    private Random random = new Random();
     private Guess check;
     private static final int EXPECTED_BOARD_SIZE = 12;
     private static final int EXPECTED_NUMBER_OF_SETS = 6;
@@ -149,6 +151,22 @@ public class SetManagerTests {
             int foundSets = countValidSets(board);
             assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
        }
+    }
+
+    @Test
+    public void testGetThird(){
+        manager.getUnconnected();
+        manager.getUnconnected();
+        manager.getUnconnected();
+        manager.getUnconnected();
+        assertTrue(manager.board.size()==4);
+        int a = random.nextInt(board.size()-1);
+        int b = random.nextInt(board.size()-1);
+        while(a==b || manager.checkIfSet(board.get(a),board.get(b))){
+            b = random.nextInt(board.size()-1);
+        }
+        manager.getThird(board.get(a), board.get(b));
+        assertTrue(manager.board.size()==5&&manager.checkSets(manager.board)==1||manager.board.size()==1);
     }
 }
 
