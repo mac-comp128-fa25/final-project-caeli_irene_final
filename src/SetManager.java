@@ -11,6 +11,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Iterator;
 
+/**
+ * Generate 12 random cards
+ * initialize 2D array to categorize card properties -> eliminating cards you can't pick
+ * 
+ * 
+ */
+
 public class SetManager {
 
     private final Map<Point, Card> currentCards = new HashMap<>();
@@ -244,6 +251,7 @@ public class SetManager {
 
     private static boolean boardFill(){
         int ran = random.nextInt(3);
+        System.out.println("Random number: "+ ran);
         int sets = checkSets(board);
         int size = board.size();
         if(size==12 && sets==6){
@@ -284,9 +292,10 @@ public class SetManager {
             // 0,3
             System.out.println("Hit too small, actual sets:"+sets+" size:"+size);
             if(ran==1 || ran==2){
-                ran = 3; //CHANGE
+                ran = 0; //CHANGE
             }
         }
+        /** Size between 3 and  */
         if(ran==0){
             generateSet();
             return boardFill();
