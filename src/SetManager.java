@@ -27,11 +27,11 @@ public class SetManager {
     //private Deck cards = new Deck(); stopped using a deck
     //private List<List<String>> sets = new ArrayList<>(); stopped tracking sets -> used in checkSets
     public static List<Card> board;
-    private static int[][] graph = new int[12][12];
-    private static Map<Card, Integer> graphPoint = new HashMap<>();
-    private static int iterate = 0;
+    public static int[][] graph = new int[12][12];
+    public static Map<Card, Integer> graphPoint = new HashMap<>();
+    public static int iterate = 0;
     private static Random random = new Random();
-    private static final boolean[] used = new boolean[81]; //CHANGED add used card
+    public static final boolean[] used = new boolean[81]; //CHANGED add used card
     //Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
     
 
@@ -451,7 +451,7 @@ public class SetManager {
 
     public static boolean checkConnections(Card c){
         int[] connected = getConnected();
-        if(connected[c.getId()]>1){
+        if(connected[c.getId()]>2){
             return false;
         }
         return true;

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class SetManagerTests {
         mockCanvas = new CanvasWindow(null, 0, 0);
         Gameboard = new GameBoard(mockCanvas);
         manager = new SetManager(Gameboard); 
-        board = manager.generateBoard();
+        //board = manager.generateBoard();
         check = new Guess();
     }
 
@@ -155,18 +156,36 @@ public class SetManagerTests {
 
     @Test
     public void testGetThird(){
+        manager.board = new ArrayList<>();
         manager.getUnconnected();
         manager.getUnconnected();
         manager.getUnconnected();
         manager.getUnconnected();
         assertTrue(manager.board.size()==4);
-        int a = random.nextInt(board.size()-1);
-        int b = random.nextInt(board.size()-1);
-        while(a==b || manager.checkIfSet(board.get(a),board.get(b))){
-            b = random.nextInt(board.size()-1);
+        int a = random.nextInt(manager.board.size()-1);
+        int b = random.nextInt(manager.board.size()-1);
+        while(a==b || manager.checkIfSet(manager.board.get(a),manager.board.get(b))){
+            b = random.nextInt(manager.board.size()-1);
         }
-        manager.getThird(board.get(a), board.get(b));
-        assertTrue(manager.board.size()==5&&manager.checkSets(manager.board)==1||manager.board.size()==1);
+        manager.getThird(manager.board.get(a), manager.board.get(b));
+        assertEquals(5,manager.board.size());
+        assertEquals(1,manager.checkSets(manager.board));
+        assertTrue(manager.board.size()==5&&manager.checkSets(manager.board)==1);
+        manager.getUnconnected();
+    }
+
+    @Test
+    public void checkConnections(){
+        manager.board = new ArrayList<>();
+        for(int i=0; i<2;i++){
+            Card temp = new Card(i);
+            manager.board.add(temp);
+            manager.graphPoint.put(temp, manager.iterate);
+            manager.iterate++;
+            manager.used[temp.getId()] = true;
+        }
+        assertEquals(0,manager.checkSets(manager.board));
+        assertEquals(2,manager.getConnected()[2]);
     }
 }
 
