@@ -30,7 +30,7 @@ public class SetManagerTests {
         mockCanvas = new CanvasWindow(null, 0, 0);
         Gameboard = new GameBoard(mockCanvas);
         manager = new SetManager(Gameboard); 
-        //board = manager.generateBoard();
+        board = manager.generateBoard();
         check = new Guess();
     }
 
