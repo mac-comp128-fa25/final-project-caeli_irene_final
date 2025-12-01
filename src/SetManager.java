@@ -24,26 +24,17 @@ public class SetManager {
     private ArrayList<Card> selectedCards; 
     private GameBoard gameBoard;
     private Guess guess = new Guess();
-    //private Deck cards = new Deck(); stopped using a deck
-    //private List<List<String>> sets = new ArrayList<>(); stopped tracking sets -> used in checkSets
     public List<Card> board;
     public int[][] graph = new int[12][12];
     public Map<Card, Integer> graphPoint = new HashMap<>();
     public int iterate = 0;
     private Random random = new Random();
-    public final boolean[] used = new boolean[81]; //CHANGED add used card
-    //Visualizer viz = null; // CHANGED to feed data into vizualizer, initialized in the
-    
+    public final boolean[] used = new boolean[81];     
 
     public SetManager(GameBoard gameBoard) { 
         this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
     }
-
-    //CHANGED VIZUALIZER
-    // public void setVisualizer(Visualizer viz) {
-    //     this.viz = viz;
-    // }
 
     public List<Card> generateBoard(){
         board = new ArrayList<>();
@@ -56,198 +47,7 @@ public class SetManager {
         }
 
         return new ArrayList<>(board);
-
-
-        //ORIGINAL
-        // int set = 0;
-        // int stop = 0;
-        // addCard(board);
-        // addCard(board);
-        // addCard(board);
-        // addCard(board);
-        // while(set<6 && stop < 100){
-        //     if(board.size()>12){
-        //         board.remove(random.nextInt(11));
-        //         addSet(board);
-        //     }
-        //     int ran = random.nextInt(10);
-        //     if(ran<3){
-        //         addCard(board);
-        //     } else{
-        //         addSet(board);
-        //     }
-        //     set = checkSets(board);
-        //     stop++;
-        // }
-        // stop = 0;
-        // while(board.size()<12 && stop < 100){
-        //     List<String> card = cards.getNextCard();
-        //     board.add(new Card(card.get(0), card.get(1), card.get(2), Integer.valueOf(card.get(3))));
-        //     set = checkSets(board);
-        //     if(set > 6){
-        //         board.remove(board.size()-1);
-        //     }
-        //     stop++;
-        // }
-        // return board;
     }
-
-    /**
-     * Recursive function to fill the board
-     * pos: current position in the board (0-11)
-     */
-    private boolean fillBoard(int pos) {
-        /**
-         * RECURSIVE
-         * Base case: pos == boardSize. The board is full, we check if it has 6 valid sets
-         * if yes -> success!
-         * if no -> go back a step and try again
-         *  create an array list of possible unused cards
-         *  Collections.shuffle them randomly
-         *  go through each card and place it on the board
-         *  check number of sets currently on board
-         *      less than 6 sets
-         *          call fill board again to add an extra card
-         *      more than 6 sets
-         *          remove card we added
-         *  */ 
-        if (pos == 15) { //checks board size
-            // Board full, must have exactly 6 sets
-            return checkSets(board) == 6;
-        }
-
-        List<Integer> candidates = new ArrayList<>(); // build a list of all unused card IDs
-        for (int i = 0; i < 81; i++) {
-            if (!used[i]) candidates.add(i);
-        }
-        Collections.shuffle(candidates, random); // shuffle unused card ids -> randomness
-
-        for (int id : candidates) { // try each candidate card
-            Card c = new Card(id); //convert id to card object
-            board.add(c); // place it on board
-            used[id] = true; // mark it as used
-            int setsNow = checkSets(board); // how many sets currently present
-            if (setsNow <= 6) { // don't allow more than 6 sets
-                if (fillBoard(pos + 1)) { // call fill board again to add an extra card
-                    return true; // solution found
-                }
-            }
-            // if we have more than 6 sets -> backtrack
-            board.remove(board.size() - 1);
-            used[id] = false;
-        }
-
-        return false; // this path leads to no valid 6 set arrangements -> throws an exception in generate board
-    }
-
-    // //CHANGED replaced by fillBoard
-    // add get next valid card to handle edge cases and make sure we never have null cards
-    // private Card getNextValidCard() {
-    //     // Try random IDs first
-    //     int tries = 0;
-    //     while (tries < 81) {
-    //         int id = random.nextInt(81);
-    //         if (!used[id]) {
-    //             used[id] = true;
-    //             return new Card(id);
-    //         }
-    //         tries++;
-    //     }
-    //     // if that takes too long -> go through all IDs
-    //     for (int i = 0; i < 81; i++) {
-    //         if (!used[i]) {
-    //             used[i] = true;
-    //             return new Card(i);
-    //         }
-    //     }
-    //     // Absolute fallback (should never happen)
-    //     return new Card(0);
-    // }
-
-    //CHANGED add set method -> with recursion we don't need it
-    // private void addSet(List<Card> board){
-    //     int ran1 = random.nextInt(board.size()-1);
-    //     int ran2 = random.nextInt(board.size()-1);
-    //     while(ran2==ran1){
-    //         ran2 = random.nextInt(board.size()-1);
-    //     }
-    //     Card test = getThird(board.get(ran1),board.get(ran2));
-    //     if(!checkCard(board, test)){
-    //         board.add(test);
-    //         cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
-    //     } 
-    // }
-    // private void generateSet(List<Card> board){
-    //     int i = random.nextInt(board.size());
-    //     int j = random.nextInt(board.size());
-    //     while(i == j) j = random.nextInt(board.size());
-
-    //     Card c1 = board.get(i);
-    //     Card c2 = board.get(j);
-
-    //     Card c3 = getThird(c1, c2);
-
-    //     // compute the ID of c3 so we prevent duplicates
-    //     int id = getCardID(c3);   // You will add this helper below
-
-    //     if(!used[id]) {
-    //         used[id] = true;
-    //         board.add(new Card(id));
-    //     }
-
-    //     if (board.size() >= 15) return;  // CHANGED 12 to 15 cards
-
-    //     if (board.size() < 2) return;
-
-    //     Card c1 = board.get(random.nextInt(board.size()));
-    //     Card c2 = board.get(random.nextInt(board.size()));
-    //     while (c1.equals(c2)) {
-    //         c2 = board.get(random.nextInt(board.size()));
-    //     }
-
-    //     Card c3 = getThird(c1, c2);
-
-    //     if (c3 == null || used[c3.getId()]) {
-    //         c3 = getNextValidCard();
-    //     } else {
-    //         used[getCardID(c3)] = true;
-    //     }
-
-    //     board.add(c3);
-    // }
-
-
-    //CHANGED add card method -> replaced by fillBoard
-    // private void addCard(List<Card> board){
-    //     Card test = new Card();
-    //     if(!checkCard(board, test)){
-    //         board.add(test);
-    //         cards.removeCard(List.of(test.getShape(), test.getColor(), test.getFill(), test.getNumber().toString()));
-    //     }
-    // }
-    // private void addCard(List<Card> board){
-    //     // // choose an unused id
-    //     // int id = random.nextInt(81);
-    //     // while(used[id]) {
-    //     //     id = random.nextInt(81);
-    //     // }
-    //     // used[id] = true;
-    //     // board.add(new Card(id));
-        
-    //     board.add(getNextValidCard());
-    // }
-
-    // addCard, addSet helper -> replaced by fill board
-    // private boolean checkCard(List<Card> board, Card test){
-    //     Iterator<Card> iter = board.iterator();
-    //     while(iter.hasNext()){
-    //         Card old = iter.next();
-    //         if(old.isEqual(test)){
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
 
     private boolean boardFill(){
         int ran = random.nextInt(3);
@@ -294,6 +94,12 @@ public class SetManager {
             System.out.println("Hit too small, actual sets:"+sets+" size:"+size);
             if(ran==1 || ran==2){
                 ran = 0; //CHANGE
+            }
+        }
+        if(size<5){
+            System.out.println("Hit almost too small, actual sets:"+sets+" size:"+size);
+            if(ran==2){
+                ran = 3;
             }
         }
         /** Size between 3 and  */
@@ -352,7 +158,9 @@ public class SetManager {
         List<Integer> candidates = getUnconnectedId();
         Collections.shuffle(candidates, random);
         tempCards[0] = new Card(candidates.get(0));
-        tempCards[1] = new Card(candidates.get(1));
+        candidates = getUnconnectedId();
+        Collections.shuffle(candidates, random);
+        tempCards[1] = new Card(candidates.get(0));
         getThird(tempCards[0], tempCards[1]);
         for(Card temp:tempCards){
             board.add(temp);
@@ -403,19 +211,6 @@ public class SetManager {
         graphPoint.put(temp, iterate);
         iterate++;
         used[temp.getId()] = true;
-        // if(checkConnections(temp)){
-        //     board.add(temp);
-        //     graphPoint.put(temp, iterate);
-        //     iterate++;
-        //     used[temp.getId()] = true;
-        // } else{
-        //     System.out.println("Removed");
-        //     for(int i=0; i<3;i++){
-        //         int ran = random.nextInt(board.size()-1);
-        //         board.remove(ran);
-        //     }
-        //     reset();
-        // }
     }
 
     public void reset(){
@@ -618,75 +413,5 @@ public class SetManager {
      */
     public List<Card> getBoard(){
         return new ArrayList<>(board);
-    }
-
-    
-    // public List<Integer> generateBoardIDsForViz() {
-    //     List<Integer> result = new ArrayList<>();
-    //     boolean[] usedLocal = new boolean[81];
-    //     backtrackViz(result, usedLocal);
-    //     return result;
-    // }
-
-    
-
-
-    // private boolean backtrackViz(List<Integer> result, boolean[] usedLocal) {
-    //     // target size 12 (standard Set board)
-    //     if (result.size() == 15) return true;
-
-    //     for (int c = 0; c < 81; c++) {
-    //         if (usedLocal[c]) continue;
-
-    //         usedLocal[c] = true;
-    //         result.add(c);
-
-    //         // VISUALIZE: prefer passing Card object if you have one; otherwise pass string
-    //         if (viz != null) {
-    //             // create a temporary Card to show full toString() if needed, otherwise pass id string
-    //             try {
-    //                 Card tmp = new Card(c);           // you already have Card(int) in code
-    //                 viz.onAddCard(tmp);              // Visualizer has onAddCard(Card)
-    //             } catch (Exception e) {
-    //                 viz.onAddCard(String.valueOf(c));
-    //             }
-    //         }
-
-    //         if (backtrackViz(result, usedLocal)) return true;
-
-    //         // BACKTRACK
-    //         result.remove(result.size() - 1);
-    //         usedLocal[c] = false;
-
-    //         if (viz != null) {
-    //             try {
-    //                 Card tmp = new Card(c);
-    //                 viz.onRemoveCard(tmp);
-    //             } catch (Exception e) {
-    //                 viz.onRemoveCard(String.valueOf(c));
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    public static void main(String[] args){
-        // Card card1 = new Card();
-        // Card card2 = new Card();
-        // Card card3 = getThird(card1, card2);
-        // for(Card test : List.of(card1, card2, card3)){
-        //     System.out.println(test.getShape());
-        //     System.out.println(test.getColor());
-        //     System.out.println(test.getFill());
-        //     System.out.println(test.getNumber());
-        // }
-
-        // for testing
-        SetManager sets = new SetManager(null);
-        List<Card> board = sets.generateBoard();
-        //Arrays.fill(used, false);
-        for(Card test : board){
-            System.out.println(test.getShape()+" "+test.getColor()+" "+test.getFill()+" "+test.getNumber());
-        }   
     }
 }
