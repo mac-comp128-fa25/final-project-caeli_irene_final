@@ -25,9 +25,6 @@ public class Card {
     private static final String[] SHAPES = {"Oval", "Diamond", "Squiggle"};
     private static final String[] COLORS = {"Red", "Green", "Purple"};
     private static final String[] FILLS= {"Empty", "Solid", "Striped"};
-    // List<String> shapes = List.of("Oval", "Diamond", "Squiggle"); 
-    // List<String> colors = List.of("Red", "Green", "Purple"); 
-    // List<String> fills = List.of("Empty", "Solid", "Striped");
 
     /**
      * Constructs a new Card with the given attributes.
@@ -154,6 +151,10 @@ public class Card {
         return graphic;
     }
     
+    public void setPosition(Point place){
+        this.position = place;
+    }
+
     public void setPosition(double x, double y){
         this.position = new Point(x,y);
     }
@@ -183,24 +184,6 @@ public class Card {
     public String toString(){
         return "["+shape+" "+fill+" "+color+" "+number+"]";
     }
-
-   
-    // for testing
-    // public static void main(String arg[]){
-    //     // Card test = new Card();
-    //     // System.out.println(test.getShape());
-    //     // System.out.println(test.getColor());
-    //     // System.out.println(test.getFill());
-    //     // System.out.println(test.getNumber());;
-    //     //CHANGED add card id to main
-    //     for (int i: List.of(0,1,2,3,4,5,6,7,8,9)){
-    //         System.out.println(new Card(i));
-    //     }
-    //     // Card byId = new Card(15);
-    //     // System.out.println("id35 -> " + byId);
-    // }
-
-    
 }
 
 

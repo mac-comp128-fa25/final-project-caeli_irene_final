@@ -8,12 +8,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
 import edu.macalester.graphics.CanvasWindow;
-import edu.macalester.graphics.Point;
 
 public class SetManagerTests {
 
@@ -31,17 +28,16 @@ public class SetManagerTests {
         mockCanvas = new CanvasWindow(null, 0, 0);
         Gameboard = new GameBoard(mockCanvas);
         manager = new SetManager(Gameboard); 
-        board = manager.generateBoard();
         check = new Guess();
     }
 
     @RepeatedTest(10)
     public void testBoardHasCorrectSizeAndSets() {
+        board = manager.generateBoard();
         assertEquals(EXPECTED_BOARD_SIZE, board.size(), "Board should have 12 cards");
 
         int foundSets = countValidSets(board);
         assertTrue(foundSets>=EXPECTED_NUMBER_OF_SETS);
-        //assertEquals(EXPECTED_NUMBER_OF_SETS, foundSets, "Board should contain 6 valid sets");
     }
 
     // Counts all valid sets of 3 cards in the board using the Guess checker. */
@@ -63,6 +59,7 @@ public class SetManagerTests {
     @Test
     public void testGetThird(){
         manager.board = new ArrayList<>();
+        board = manager.board;
         manager.getUnconnected();
         manager.getUnconnected();
         manager.getUnconnected();
@@ -83,6 +80,7 @@ public class SetManagerTests {
     @Test
     public void checkConnections(){
         manager.board = new ArrayList<>();
+        board = manager.board;
         for(int i=0; i<2;i++){
             Card temp = new Card(i);
             manager.board.add(temp);

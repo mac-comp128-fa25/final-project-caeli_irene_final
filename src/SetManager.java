@@ -2,25 +2,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import edu.macalester.graphics.Point;
 import java.util.Random;
-import java.util.Set;
 import java.util.Iterator;
 
 /**
  * Generate 12 random cards
  * initialize 2D array to categorize card properties -> eliminating cards you can't pick
- * 
- * 
  */
 
 public class SetManager {
 
-    private final Map<Point, Card> currentCards = new HashMap<>();
+    public Map<Point, Card> currentCards = new HashMap<>();
     private ArrayList<Card> selectedCards; 
     private GameBoard gameBoard;
     private Guess guess = new Guess();
@@ -34,6 +30,9 @@ public class SetManager {
     public SetManager(GameBoard gameBoard) { 
         this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
+        generateBoard();
+        assignPositions();
+        gameBoard.setUpCards(currentCards);
     }
 
     public List<Card> generateBoard(){
@@ -301,11 +300,21 @@ public class SetManager {
         return graph[graphPoint.get(a)][graphPoint.get(b)]==1;
     }
 
+    public void assignPositions(){
+        List<Point> positions = generateGridPositions();
+        Iterator<Point> pos = positions.iterator();
+        for(Card temp: board){
+            Point currentPosition = pos.next();
+            temp.setPosition(currentPosition);
+            currentCards.put(currentPosition, temp);
+        }
+    }
+
     /**
      * UI
      * Places cards on the Gameboard object
      */
-    public List<Point> generateGridPositions() { //CHANGED made public so vizualizer can access it
+    public List<Point> generateGridPositions() { 
         List<Point> positions = new ArrayList<>();
         int cols = 4;
         int rows = 3;
@@ -329,15 +338,24 @@ public class SetManager {
         if (!guess.isValidSet(card1, card2, card3)) {
             return false;
         }
+        toggleCardSelection(card1);
+        toggleCardSelection(card2);
+        toggleCardSelection(card3);
+        return true;
+    }
 
-        Point pos1 = card1.getPosition();
-        Point pos2 = card2.getPosition();
-        Point pos3 = card3.getPosition();
-    
-        if (pos1 != null) currentCards.remove(pos1);
-        if (pos2 != null) currentCards.remove(pos2);
-        if (pos3 != null) currentCards.remove(pos3);
-
+    /**
+     * UI
+     * Passes 3 cards selected in the guess class
+     * Remove and replace if the guess is correct
+     */
+    public boolean processGuess(List<Card> cards) {
+        if (!guess.isValidSet(cards.get(0), cards.get(1), cards.get(2))) {
+            return false;
+        }
+        for(Card temp:cards){
+            toggleCardSelection(temp);
+        }
         return true;
     }
 
@@ -382,7 +400,11 @@ public class SetManager {
             selectedCards.get(1), 
             selectedCards.get(2));
 
-        // Still need to be added
+        if(isValid){
+            for(Card temp : selectedCards){
+                toggleCardSelection(temp);
+            }
+        }
 
         clearSelection();
         return isValid;
