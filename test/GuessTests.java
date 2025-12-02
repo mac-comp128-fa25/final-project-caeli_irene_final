@@ -129,12 +129,11 @@ public class GuessTests {
     //Tests that processGuess correctly returns true and adds the valid set to the correct guesses list.
     @Test
     public void processGuess_returnsTrueAndAddsToCorrectGuesses_whenValidSet() {
-        Deck deck = new Deck();
         Card card1 = createCard("Oval", "Red", "Solid", 1);
         Card card2 = createCard("Oval", "Green", "Striped", 1);
         Card card3 = createCard("Oval", "Purple", "Empty", 1);
         
-        assertTrue(guess.processGuess(card1, card2, card3, deck));
+        assertTrue(guess.processGuess(card1, card2, card3));
         assertEquals(1, guess.getCorrectGuesses().size());
         assertEquals(3, guess.getCorrectGuesses().get(0).size());
     }
@@ -142,12 +141,11 @@ public class GuessTests {
     //Tests that processGuess correctly returns false and does not add an invalid set to the correct guesses list.
     @Test
     public void processGuess_returnsFalse_whenInvalidSet() {
-        Deck deck = new Deck();
         Card card1 = createCard("Oval", "Red", "Solid", 1);
         Card card2 = createCard("Oval", "Red", "Striped", 1);
         Card card3 = createCard("Oval", "Purple", "Empty", 1);
         
-        assertFalse(guess.processGuess(card1, card2, card3, deck));
+        assertFalse(guess.processGuess(card1, card2, card3));
         assertEquals(0, guess.getCorrectGuesses().size()); // Ensures the invalid set is not added
     }
 }

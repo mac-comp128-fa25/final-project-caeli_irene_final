@@ -18,7 +18,6 @@ public class SetManager {
 
     public Map<Point, Card> currentCards = new HashMap<>();
     private ArrayList<Card> selectedCards; 
-    private GameBoard gameBoard;
     private Guess guess = new Guess();
     public List<Card> board;
     public int[][] graph = new int[12][12];
@@ -28,7 +27,6 @@ public class SetManager {
     public final boolean[] used = new boolean[81];     
 
     public SetManager(GameBoard gameBoard) { 
-        this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
         generateBoard();
         assignPositions();

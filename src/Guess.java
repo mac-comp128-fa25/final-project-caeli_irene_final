@@ -20,7 +20,7 @@ public class Guess {
      * Handles a guess attempt
      * @return true if valid set
      */
-    public boolean processGuess(Card card1, Card card2, Card card3, Deck deck) {
+    public boolean processGuess(Card card1, Card card2, Card card3) {
         if (!isValidSet(card1, card2, card3)) {
             return false;
         }
