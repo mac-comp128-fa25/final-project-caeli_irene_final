@@ -10,10 +10,9 @@ import java.util.Random;
 import java.util.Iterator;
 
 /**
- * Generate 12 random cards
+ * Generate 12 random cards that contain 6 or more sets
  * initialize 2D array to categorize card properties -> eliminating cards you can't pick
  */
-
 public class SetManager {
 
     public Map<Point, Card> currentCards = new HashMap<>();
@@ -26,6 +25,10 @@ public class SetManager {
     private Random random = new Random();
     public final boolean[] used = new boolean[81];     
 
+    /**
+     * Constructs a new SetManager with a bpard of 12 cards with 6 or more sets
+     * @param gameBoard the GameBoard that the cards will be added to
+     */
     public SetManager(GameBoard gameBoard) { 
         this.selectedCards = new ArrayList<>();
         generateBoard();
@@ -33,6 +36,9 @@ public class SetManager {
         gameBoard.setUpCards(currentCards);
     }
 
+    /**
+     * Generates a list of cards that make a valid board
+     */
     public List<Card> generateBoard(){
         board = new ArrayList<>();
         iterate = 0;
@@ -46,69 +52,45 @@ public class SetManager {
         return new ArrayList<>(board);
     }
 
+    /**
+     * A recurssive method to randomly builds the board
+     */
     private boolean boardFill(){
         int ran = random.nextInt(3);
-        System.out.println("Random number: "+ ran);
         int sets = checkSets(board);
         int size = board.size();
-        System.out.println("Sets: "+sets+" Size: "+size);
         if(size==12 && sets>=6){
-            System.out.println("Hit final, actual sets:"+sets+" size:"+size);
             return true;
         }
         if(sets>=6){
-            System.out.println("Hit full sets, actual sets:"+sets+" size:"+size);
             getUnconnected();
             return boardFill();
         }
         if((12-size)==(6-sets)){
-            System.out.println("Hit only get third, actual sets:"+sets+" size:"+size);
             ran = 2;
         } 
-        if((12-size)==(7-sets)){
-            //1,2,3
-            System.out.println("Hit everything but get set, actual sets:"+sets+" size:"+size);
-            if(ran==0){
-                ran = 1; //CHANGE
-            }
+        if((12-size)==(7-sets)&&(ran==0)){ //1,2,3
+            ran = 1; 
         } 
-        if(size==10){
-            //1,2,3
-            System.out.println("Hit 10, actual sets:"+sets+" size:"+size);
-            if(ran==0){
-                ran = 1; //CHANGE
-            }
+        if((size==10)&&(ran==0)){ //1,2,3
+            ran = 1; 
         }
-        if(size==11){
-            //2,3
-            System.out.println("Hit 11, actual sets:"+sets+" size:"+size);
-            if(ran<2){
-                ran = ran+2;
-            }
+        if((size==11)&&(ran<2)){ //2,3
+            ran = ran+2;
         } 
-        if(size<2){
-            // 0,3
-            System.out.println("Hit too small, actual sets:"+sets+" size:"+size);
-            if(ran==1 || ran==2){
-                ran = 0; //CHANGE
-            }
+        if((size<2)&&(ran==1 || ran==2)){ //0,3
+            ran = 0; 
         }
-        if(size<5){
-            System.out.println("Hit almost too small, actual sets:"+sets+" size:"+size);
-            if(ran==2){
-                ran = 3;
-            }
+        if((size<5)&&(ran==2)){
+            ran = 3;
         }
-        /** Size between 3 and  */
         if(ran==0){
             generateSet();
-            System.out.println("Get set, plus 3");
             return boardFill();
         }
         if(ran==1){
             int a = random.nextInt(board.size()-1);
             generateSet(board.get(a));
-            System.out.println("Get set, plus 2");
             return boardFill();
         }
         if(ran==2){
@@ -118,17 +100,19 @@ public class SetManager {
                 b = random.nextInt(board.size()-1);
             }
             getThird(board.get(a), board.get(b));
-            System.out.println("Get third");
             return boardFill();
         }
         if(ran==3){
             getUnconnected();
-            System.out.println("Get unconnected");
             return boardFill();
         }
         return false;
     }
     
+    /**
+     * Calculates the number of valid sets given the current board 
+     * Also updates the adjacency matrix based on the current sets
+     */
     public int checkSets(List<Card> board){
         int setCount = 0;
         for(int i=0; i<board.size()-2;i++){
@@ -150,6 +134,9 @@ public class SetManager {
     
     }
 
+    /**
+     * Adds three random cards that make a set to the board
+     */
     public void generateSet(){
         Card[] tempCards = new Card[2];
         List<Integer> candidates = getUnconnectedId();
@@ -167,6 +154,9 @@ public class SetManager {
         }
     }
 
+    /**
+     * Adds the rest of a new set that contains the input card to the board
+     */
     public void generateSet(Card card1){
         List<Integer> candidates = getUnconnectedId();
         Collections.shuffle(candidates, random);
@@ -178,6 +168,9 @@ public class SetManager {
         used[temp.getId()] = true;
     }
 
+    /**
+     * Adds the third card in a set with the two input cards to the board
+     */
     public void getThird(Card card1, Card card2){
         String color;
         String shape;
@@ -210,17 +203,9 @@ public class SetManager {
         used[temp.getId()] = true;
     }
 
-    public void reset(){
-        iterate = 0;
-        graphPoint.clear();
-        Arrays.fill(used, false);
-        for(Card temp:board){
-            graphPoint.put(temp, iterate);
-            iterate++;
-            used[temp.getId()] = true;
-        }
-    }
-
+    /**
+     * Adds a card ot tha board that is not in any sets with cards on the board
+     */
     public void getUnconnected(){
         List<Integer> candidates = getUnconnectedId();
         Collections.shuffle(candidates, random);
@@ -231,6 +216,9 @@ public class SetManager {
         used[temp.getId()] = true;
     }
 
+    /**
+     * @return a list of Card Ids that are not on the board or in a sets with two cards on the board
+     */
     public List<Integer> getUnconnectedId(){
         List<Integer> candidates = new ArrayList<>(); // build a list of all unused card IDs
         int[] connected = getConnected();
@@ -240,6 +228,9 @@ public class SetManager {
         return candidates;
     }
 
+    /**
+     * @return an array indicating double the number of sets not on the board a card completes 
+     */
     public int[] getConnected(){
         int[] connected = new int[81];
         Arrays.fill(connected, 0);
@@ -257,6 +248,9 @@ public class SetManager {
         return connected;
     }
 
+    /**
+     * @return a boolean that is true if a card is in less than 2 sets with cards on tha board
+     */
     public boolean checkConnections(Card c){
         int[] connected = getConnected();
         if(connected[c.getId()]>2){
@@ -265,6 +259,9 @@ public class SetManager {
         return true;
     }
 
+    /**
+     * @return the id of the third card in a set with the two input cards
+     */
     public int getThirdId(Card card1, Card card2){
         String color;
         String shape;
@@ -294,10 +291,16 @@ public class SetManager {
         return temp.getId();
     }
 
+    /**
+     * @return if two cards are in a set that is on the board
+     */
     public boolean checkIfSet(Card a, Card b){
         return graph[graphPoint.get(a)][graphPoint.get(b)]==1;
     }
 
+    /**
+     * Assigns the cards on the board positions and updates the Map
+     */
     public void assignPositions(){
         List<Point> positions = generateGridPositions();
         Iterator<Point> pos = positions.iterator();
@@ -309,8 +312,7 @@ public class SetManager {
     }
 
     /**
-     * UI
-     * Places cards on the Gameboard object
+     * @return a list of possible positions cards can go into on the board
      */
     public List<Point> generateGridPositions() { 
         List<Point> positions = new ArrayList<>();
@@ -328,9 +330,8 @@ public class SetManager {
     }
 
     /**
-     * UI
      * Passes 3 cards selected in the guess class
-     * Remove and replace if the guess is correct
+     * Un-selects them if the guess is correct
      */
     public boolean processGuess(Card card1, Card card2, Card card3) {
         if (!guess.isValidSet(card1, card2, card3)) {
@@ -343,9 +344,8 @@ public class SetManager {
     }
 
     /**
-     * UI
-     * Passes 3 cards selected in the guess class
-     * Remove and replace if the guess is correct
+     * Passes a list of 3 cards selected in the guess class
+     * Un-selects them if the guess is correct
      */
     public boolean processGuess(List<Card> cards) {
         if (!guess.isValidSet(cards.get(0), cards.get(1), cards.get(2))) {
@@ -358,7 +358,6 @@ public class SetManager {
     }
 
     /*
-     * UI
      * Takes in clicked card from GameOfSet
      * Checks no more than 3 cards are selected at the same time
      * Passes selected card onto Card class to highlight it
@@ -381,35 +380,7 @@ public class SetManager {
         return true;
     }
 
-    /*
-     * UI
-     * Takes in set of selected cards to check if it is a correct guess
-     * Passes the 3 selected cards into the guess class
-     * If the guess is valid the selected cards are removed from the board
-     */
-    public boolean processCurrentSelection() {
-        if (selectedCards.size() != 3) {
-            return false;
-        }
-
-        Guess guess = new Guess();
-        boolean isValid = guess.isValidSet(
-            selectedCards.get(0),
-            selectedCards.get(1), 
-            selectedCards.get(2));
-
-        if(isValid){
-            for(Card temp : selectedCards){
-                toggleCardSelection(temp);
-            }
-        }
-
-        clearSelection();
-        return isValid;
-    }
-
     /**
-     * UI
      * Clears current selection and visual state
      */
     public void clearSelection() {
@@ -421,16 +392,11 @@ public class SetManager {
         selectedCards.clear();
 
     }
-    /**
-     * UI
-     */
+    
     public List<Card> getSelectedCards() {
         return new ArrayList<>(selectedCards);
     }
 
-    /**
-     * UI
-     */
     public List<Card> getBoard(){
         return new ArrayList<>(board);
     }

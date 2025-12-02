@@ -21,14 +21,12 @@ public class Card {
     private Random random = new Random();
     private int id;
 
-    // CHANGED add static arrays so constructors can reference reliably
     private static final String[] SHAPES = {"Oval", "Diamond", "Squiggle"};
     private static final String[] COLORS = {"Red", "Green", "Purple"};
     private static final String[] FILLS= {"Empty", "Solid", "Striped"};
 
     /**
      * Constructs a new Card with the given attributes.
-     * 
      * @param shape The shape of the card ("Oval", "Diamond", "Squiggle").
      * @param color The color of the card ("Red", "Green", "Purple").
      * @param fill The fill pattern of the card ("Solid", "Striped", "Empty").
@@ -44,9 +42,10 @@ public class Card {
         this.id = List.of(SHAPES).indexOf(shape)+List.of(COLORS).indexOf(color)*3+List.of(FILLS).indexOf(fill)*9+(number-1)*27;
     }
 
-    // CHANGED random card constructor
+    /**
+     * Constructs a new Card with random attributes
+     */
     public Card(){
-        // random.nextInt(3) since there are 3 options (0,1,2)
         int r = random.nextInt(3);
         this.shape = SHAPES[r];
         r = random.nextInt(3);
@@ -59,7 +58,6 @@ public class Card {
         this.id = List.of(SHAPES).indexOf(shape)+List.of(COLORS).indexOf(color)*3+List.of(FILLS).indexOf(fill)*9+(number-1)*27;
     }
 
-    //CHANGED generate card based on ID not randomly (so we can have more control without using a full deck)
     /**
      * Create a card from an id in [0,80] using an implicit graph / indexing scheme:
      *  id % 3 -> shape (0..2)
@@ -68,7 +66,6 @@ public class Card {
      *  (id / 27) % 3 -> number index (0..2) -> +1
      */
     public Card(int id) {
-        // assume id in [0,80]
         this.shape = SHAPES[id % 3];
         this.color = COLORS[(id / 3) % 3];
         this.fill = FILLS[(id / 9) % 3];
@@ -78,6 +75,9 @@ public class Card {
         this.id = id;
     }
 
+    /**
+     * Returns the third shape between this Card and other Card
+     */
     public String thirdShape(Card other){
         List<String> tempShapes = new ArrayList<>(List.of(SHAPES));
         tempShapes.remove(this.shape);
@@ -85,6 +85,9 @@ public class Card {
         return tempShapes.get(0);
     }
 
+    /**
+     * Returns the third color between this Card and other Card
+     */
     public String thirdColor(Card other){
         List<String> tempColor = new ArrayList<>(List.of(COLORS));
         tempColor.remove(this.color);
@@ -92,6 +95,9 @@ public class Card {
         return tempColor.get(0);
     }
 
+    /**
+     * Returns the third fill between this Card and other Card
+     */
     public String thirdFill(Card other){
         List<String> tempFill = new ArrayList<>(List.of(FILLS));
         tempFill.remove(this.fill);
@@ -99,16 +105,9 @@ public class Card {
         return tempFill.get(0);
     }
 
-    public boolean isEqual(Card other){
-        if (other == null) return false;
-        boolean shapeEq = this.shape.equals(other.getShape());
-        boolean colorEq = this.color.equals(other.getColor());
-        boolean fillEq  = this.fill.equals(other.getFill());
-        boolean numEq   = this.number.equals(other.getNumber());
-        return shapeEq && colorEq && fillEq && numEq;
-    }
-
-    //CHANGED override equals/hashCode so collections work reliably:
+    /**
+     * Checks if this card has the same attributes as another object
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,11 +118,11 @@ public class Card {
             && Objects.equals(fill, other.fill)
             && Objects.equals(number, other.number);
     }
+
     @Override
     public int hashCode() {
         return id;
     }
-
 
     public String getShape() {
         return shape;
@@ -141,12 +140,16 @@ public class Card {
         return number;
     }
 
-    //returns a graphicsGroup
+    /**
+     * @return a GraphicsGroup that is the card
+     */
     public GraphicsGroup getGraphic() {
         return graphic.getGraphics();
     }
 
-    //returns a card graphics
+    /**
+     * @return a CardGraphics that contains the graphics group
+     */
     public CardGraphics getCardGraphics() {
         return graphic;
     }
@@ -167,7 +170,9 @@ public class Card {
         return id;
     }
 
-    //Sets the selected state of the card and updates its graphic accordingly.
+    /**
+     * Sets the selected state of the card and updates its graphic accordingly.
+     */
     public void setSelected(boolean selected) {
         this.isSelected = selected;
         if (selected) {
