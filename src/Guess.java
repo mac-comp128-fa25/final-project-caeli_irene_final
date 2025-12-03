@@ -2,23 +2,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Guess class is responsible for handling the logic of processing guesses in the game.
- * It validates if a set of three cards forms a valid set and keeps track of correct guesses.
- * The correct guesses are stored as lists of cards.
+ * The Guess class handles the logic for evaluating guesses in the Game of Set.
+ * It verifies whether three selected cards form a valid set and stores all correctly
+ * identified sets for later reference.
  */
 public class Guess {
+
+    /** A list of all correct guesses, each represented as a list of three cards. */
     private List<List<Card>> correctGuesses;
 
     /**
-     * Constructor that accepts the current setof cards
+     * Constructs a new Guess object with an empty list of correct guesses.
      */
     public Guess (){
         correctGuesses=new ArrayList<>();
     }
 
     /**
-     * Handles a guess attempt
-     * @return true if valid set
+     * Processes a guess containing three cards.
+     *
+     * @param card1 the first selected card
+     * @param card2 the second selected card
+     * @param card3 the third selected card
+     * @return true if the three cards form a valid set,
+     *         false otherwise
      */
     public boolean processGuess(Card card1, Card card2, Card card3) {
         if (!isValidSet(card1, card2, card3)) {

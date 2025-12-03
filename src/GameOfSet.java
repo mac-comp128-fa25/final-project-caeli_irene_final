@@ -113,7 +113,7 @@ public class GameOfSet {
      */
     public void createMistakesDisplay(){
         mistakesDisplay = new GraphicsText();
-        mistakesDisplay.setText("Mistakes made: " + mistakes);
+        mistakesDisplay.setText("Mistakes: " + mistakes);
         mistakesDisplay.setPosition(
             GameBoard.CARD_WIDTH * 4 + GameBoard.PADDING * 5,  
             GameBoard.PADDING + 50                             
