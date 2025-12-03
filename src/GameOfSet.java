@@ -4,6 +4,17 @@ import edu.macalester.graphics.Point;
 import edu.macalester.graphics.ui.Button;
 import java.util.List;
 
+/**
+ * Main controller class for the Game of Set application.
+ * 
+ * This class handles:
+ * 
+ *   Initializing the UI and game components</li>
+ *   Managing user input (card clicking)</li>
+ *   Tracking game statistics such as mistakes and correct sets</li>
+ *   Refreshing the board</li>
+ * 
+ */
 public class GameOfSet {
     CanvasWindow canvas; 
     private GameBoard gameBoard;
@@ -16,14 +27,21 @@ public class GameOfSet {
     private int correctSets;                         
           
 
-
+    /**
+     * Constructs a new GameOfSet instance, initializes the UI,
+     * sets up event handlers, and begins the first animation frame.
+     */
     public GameOfSet() {
         canvas = new CanvasWindow("Game of Set", 1400, 740);
-        gameBoard = new GameBoard(canvas); //pass reference to CameBoard
-        setManager = new SetManager(gameBoard); //pass the reference to CardManager
-        canvas.onClick(e -> handleCardClick(e.getPosition())); //handle clicking
 
-        //UI objects
+        // Core game components
+        gameBoard = new GameBoard(canvas); 
+        setManager = new SetManager(gameBoard); 
+
+        // Input handling
+        canvas.onClick(e -> handleCardClick(e.getPosition())); 
+
+        //UI elements
         createRefreshButton(); //initialize refresh button
         createMistakesDisplay(); //initialize mistakes display
         createCorrectSetDisplay();
@@ -31,9 +49,12 @@ public class GameOfSet {
         canvas.animate(()->{});
     }
 
-    /*
-     * Handle clicking actions 
-     * Calls methods needed for selection to process guesses and update graphics
+    /**
+     * Handles a click on the canvas. Determines whether a card was clicked,
+     * updates card selection state, and processes guesses once three cards
+     * have been selected.
+     *
+     * @param clickPosition The position of the mouse click
      */
     private void handleCardClick(Point clickPosition) {
         Point cardPosition = gameBoard.getCardPositionAt(
@@ -58,10 +79,9 @@ public class GameOfSet {
     }
 
 
-    /*
-     * Called when Refresh button clicked
-     * Initializes game
-     * resets mistakes and correct sets to 
+    /**
+     * Resets the game board by regenerating the cards, resetting statistics,
+     * and updating the display components.
      */
     public void refreshGame() {
         setManager.generateBoard();
@@ -74,9 +94,9 @@ public class GameOfSet {
        
     }
 
-     /*
-      * Initializes refresh buttons 
-      */
+     /**
+     * Creates and positions the Refresh button.
+     */
      private void createRefreshButton() {
         Button refreshButton = new Button("Refresh");
         refreshButton.setPosition(
@@ -88,9 +108,8 @@ public class GameOfSet {
         canvas.add(refreshButton);
     }
 
-    /*
-     * Initialize mistake display
-     * below refresh button, same x position 
+    /**
+     * Initializes the text display that shows the number of mistakes made.
      */
     public void createMistakesDisplay(){
         mistakesDisplay = new GraphicsText();
@@ -102,16 +121,15 @@ public class GameOfSet {
         canvas.add(mistakesDisplay);
     }
 
-    /*
-     * Called when a mistake is made
+    /**
+     * Updates the visible mistakes counter.
      */
     public void updateMistakesDisplay(){ 
         mistakesDisplay.setText("Mistakes: " + mistakes);
     }
 
-    /*
-     * Initialize correct set display
-     * Same x as refresh button
+    /**
+     * Initializes the text display that shows the number of correct sets found.
      */
     private void createCorrectSetDisplay(){
         correctSetsDisplay = new GraphicsText();
@@ -122,13 +140,16 @@ public class GameOfSet {
         canvas.add(correctSetsDisplay);
     }
 
-    /*
-     * Called when a correct guess is made
+    /**
+     * Updates the displayed number of correct sets.
      */
     private void updateCorrectSetsDisplay(){
         correctSetsDisplay.setText("Correct Sets: " + correctSets);
     }
-
+    
+    /**
+     * Main entry point for launching the game.
+     */
     public static void main(String[] args) {
         new GameOfSet();
     }    
