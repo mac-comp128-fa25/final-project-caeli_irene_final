@@ -5,15 +5,30 @@ import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.GraphicsGroup;
 import edu.macalester.graphics.Point;
 
+
+/**
+ * Manages the visual layout and rendering of Set cards on the canvas.
+ * Tracks card positions, detects clicks, and updates the display when
+ * cards are added, removed, or replaced.
+ */
 public class GameBoard {
+    /** Window where all cards are drawn. */
     private CanvasWindow canvas;
+
+    /** Maps top-left board positions to the corresponding Card object. */
     public Map<Point, Card> cardPositions;
 
+    /** Width of each element in pixels. */
     public static final int CARD_WIDTH = 250;
     public static final int CARD_HEIGHT = 120;
     public static final int PADDING = 20;
     public static final int CHANGE = 170;
     
+    /**
+     * Creates a new GameBoard responsible for placing and rendering cards.
+     *
+     * @param canvas The CanvasWindow where the board will be drawn.
+     */
     public GameBoard(CanvasWindow canvas) {
         this.canvas = canvas;
         this.cardPositions = new HashMap<>();
@@ -21,7 +36,10 @@ public class GameBoard {
 
     
     /**
-     * Initial full board setup
+     * Clears the board and places a full set of cards onto the canvas.
+     * Each entry in the map represents the position where a card should appear.
+     *
+     * @param cardsOnBoard A map from board positions to Card objects.
      */
     public void setUpCards(Map<Point, Card> cardsOnBoard) {
         clear();
@@ -29,10 +47,7 @@ public class GameBoard {
         for (Map.Entry<Point, Card> entry : cardsOnBoard.entrySet()) {
             Point position = entry.getKey();
             Card card = entry.getValue();
-            
-            card.setSelected(false);
 
-            // Set and add to canvas
             card.setPosition(position.getX()+CHANGE, position.getY()+CHANGE);
             canvas.add(card.getGraphic(), position.getX()+CHANGE, position.getY()+CHANGE);
         }
@@ -41,7 +56,10 @@ public class GameBoard {
     }
 
     /**
-     * Partial update after guesses
+     * Updates part of the board by inserting new cards into existing positions,
+     * then rerenders the full board.
+     *
+     * @param newCards Map of positions and cards to insert or replace.
      */
    public void updateBoard(Map<Point, Card> newCards) {
         cardPositions.putAll(newCards);
@@ -49,7 +67,11 @@ public class GameBoard {
     }
 
     /**
-     * Returns position if clicked point contains a card
+     * Returns the top-left position of the card containing the given click point.
+     *
+     * @param x The x coordinate of the mouse click.
+     * @param y The y coordinate of the mouse click.
+     * @return The Point representing the card's position, or null if none found.
      */
     public Point getCardPositionAt(int x, int y) {
         for (Point pos : cardPositions.keySet()) {
@@ -61,18 +83,20 @@ public class GameBoard {
         return null;
     }
     
-    /*
-     * Find position of a card given a point
+    /**
+     * Returns the Card object located at the given board position.
+     *
+     * @param pos1 The position to retrieve a card from.
+     * @return The card at that position, or null if none exists.
      */
     public Card getCardAt(Point pos1) {
         return cardPositions.get(pos1);
     }
 
 
-    /*
-     * Places cards from Map to canvas
-     * Mainains selection state during redraws
-     * Adds position to the canvas
+    /**
+     * Clears and redraws all cards currently on the board.
+     * Maintains each card's selection visual state.
      */
     private void renderAllCards() {
         canvas.removeAll();
@@ -94,8 +118,8 @@ public class GameBoard {
         }
     }
 
-    /*
-     * Removes graphic object from each position of the Gameboard
+    /**
+     * Removes all card graphics from the canvas and clears the board map.
      */
     public void clear() {
         for (Card card : cardPositions.values()) {
@@ -103,7 +127,11 @@ public class GameBoard {
         }
         cardPositions.clear();
     }
-
+    /**
+     * Returns a collection of all cards currently displayed on the board.
+     *
+     * @return A collection of Card objects.
+     */
     public Collection<Card> getCurrentCards() {
         return cardPositions.values();
     }
