@@ -17,6 +17,7 @@ public class SetManager {
 
     public Map<Point, Card> currentCards = new HashMap<>();
     private ArrayList<Card> selectedCards; 
+    private GameBoard gameBoard;
     private Guess guess = new Guess();
     public List<Card> board;
     public int[][] graph = new int[12][12];
@@ -30,6 +31,7 @@ public class SetManager {
      * @param gameBoard the GameBoard that the cards will be added to
      */
     public SetManager(GameBoard gameBoard) { 
+        this.gameBoard = gameBoard;
         this.selectedCards = new ArrayList<>();
         generateBoard();
         assignPositions();
@@ -334,26 +336,13 @@ public class SetManager {
      * Un-selects them if the guess is correct
      */
     public boolean processGuess(Card card1, Card card2, Card card3) {
-        if (!guess.isValidSet(card1, card2, card3)) {
-            return false;
-        }
         toggleCardSelection(card1);
         toggleCardSelection(card2);
         toggleCardSelection(card3);
-        return true;
-    }
-
-    /**
-     * Passes a list of 3 cards selected in the guess class
-     * Un-selects them if the guess is correct
-     */
-    public boolean processGuess(List<Card> cards) {
-        if (!guess.isValidSet(cards.get(0), cards.get(1), cards.get(2))) {
+        if (!guess.processGuess(card1, card2, card3)) {
             return false;
         }
-        for(Card temp:cards){
-            toggleCardSelection(temp);
-        }
+        gameBoard.updateCorrectSets(card1, card2, card3);
         return true;
     }
 

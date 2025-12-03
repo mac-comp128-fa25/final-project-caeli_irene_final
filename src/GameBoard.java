@@ -17,12 +17,15 @@ public class GameBoard {
 
     /** Maps top-left board positions to the corresponding Card object. */
     public Map<Point, Card> cardPositions;
+    private int correctSets;
 
     /** Width of each element in pixels. */
     public static final int CARD_WIDTH = 250;
     public static final int CARD_HEIGHT = 120;
     public static final int PADDING = 20;
-    public static final int CHANGE = 170;
+    public static final int CHANGE = 120;
+    public static final int SETSX = 60;
+    public static final int SETSY = 530;
     
     /**
      * Creates a new GameBoard responsible for placing and rendering cards.
@@ -32,6 +35,7 @@ public class GameBoard {
     public GameBoard(CanvasWindow canvas) {
         this.canvas = canvas;
         this.cardPositions = new HashMap<>();
+        correctSets = 0;
     }
 
     
@@ -134,6 +138,21 @@ public class GameBoard {
      */
     public Collection<Card> getCurrentCards() {
         return cardPositions.values();
+    }
+
+    public void updateCorrectSets(Card card1, Card card2, Card card3){
+        Card copy1 = new Card(card1.getId());
+        Card copy2 = new Card(card2.getId());
+        Card copy3 = new Card(card3.getId());
+        GraphicsGroup copyGraphic1 = copy1.getGraphic();
+        copyGraphic1.setScale(0.5);
+        GraphicsGroup copyGraphic2 = copy2.getGraphic();
+        copyGraphic2.setScale(0.5);
+        GraphicsGroup copyGraphic3 = copy3.getGraphic();
+        copyGraphic3.setScale(0.5);
+        canvas.add(copyGraphic1, SETSX, SETSY);
+        canvas.add(copyGraphic2, SETSX, SETSY+80);
+        canvas.add(copyGraphic3, SETSX, SETSY+160);
     }
 
 

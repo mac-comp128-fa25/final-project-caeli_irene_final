@@ -31,8 +31,13 @@ public class Guess {
         if (!isValidSet(card1, card2, card3)) {
             return false;
         }
+
+        if (correctGuesses.contains(List.of(card1,card2,card3))){
+            return false;
+        }
         
         correctGuesses.add(List.of(card1,card2,card3));
+        
         return true;
     }
 

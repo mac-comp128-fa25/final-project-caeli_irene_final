@@ -32,7 +32,7 @@ public class GameOfSet {
      * sets up event handlers, and begins the first animation frame.
      */
     public GameOfSet() {
-        canvas = new CanvasWindow("Game of Set", 1400, 740);
+        canvas = new CanvasWindow("Game of Set", 1400, 840);
 
         // Core game components
         gameBoard = new GameBoard(canvas); 
@@ -66,7 +66,7 @@ public class GameOfSet {
             boolean isValidSelection = setManager.toggleCardSelection(clickedCard);
             List<Card> selectedCards = setManager.getSelectedCards();
             if (isValidSelection && selectedCards.size() == 3) {
-                boolean isCorrectSet = setManager.processGuess(selectedCards);
+                boolean isCorrectSet = setManager.processGuess(selectedCards.get(0), selectedCards.get(1), selectedCards.get(2));
                 if (!isCorrectSet) {
                     mistakes++;
                     updateMistakesDisplay();
@@ -136,7 +136,7 @@ public class GameOfSet {
         correctSetsDisplay.setText("Correct Sets: " + correctSets);
         correctSetsDisplay.setPosition(
         GameBoard.CARD_WIDTH * 4 + GameBoard.PADDING * 5,  
-        GameBoard.PADDING + 100);
+        GameBoard.PADDING + 80);
         canvas.add(correctSetsDisplay);
     }
 

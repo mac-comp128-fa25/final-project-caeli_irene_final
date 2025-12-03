@@ -1,3 +1,4 @@
+import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.GraphicsGroup;
 import edu.macalester.graphics.Point;
 
@@ -188,6 +189,18 @@ public class Card {
 
     public String toString(){
         return "["+shape+" "+fill+" "+color+" "+number+"]";
+    }
+
+    public static void main(String[] args) {
+        Card test = new Card();
+        Card test2 = new Card();
+        GraphicsGroup temp = test.getGraphic();
+        GraphicsGroup temp2 = test2.getGraphic();
+        CanvasWindow canvas = new CanvasWindow("Test", 500, 500);
+        canvas.add(temp, 20, 20);
+        temp2.setScale(0.5);
+        canvas.add(temp2, 300, 300);
+        canvas.draw();
     }
 }
 
