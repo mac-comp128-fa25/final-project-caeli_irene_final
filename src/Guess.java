@@ -1,5 +1,7 @@
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * The Guess class handles the logic for evaluating guesses in the Game of Set.
@@ -32,11 +34,17 @@ public class Guess {
             return false;
         }
 
-        if (correctGuesses.contains(List.of(card1,card2,card3))){
+        List<Card> set = new ArrayList<>();
+        set.add(card1);
+        set.add(card2);
+        set.add(card3);
+        Collections.sort(set);
+
+        if (correctGuesses.contains(set)){
             return false;
         }
         
-        correctGuesses.add(List.of(card1,card2,card3));
+        correctGuesses.add(set);
         
         return true;
     }
@@ -71,5 +79,9 @@ public class Guess {
      */
     public List<List<Card>> getCorrectGuesses() {
         return new ArrayList<>(correctGuesses);
+    }
+
+    public void clear(){
+        correctGuesses.clear();
     }
 }

@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.GraphicsGroup;
@@ -17,6 +19,7 @@ public class GameBoard {
 
     /** Maps top-left board positions to the corresponding Card object. */
     public Map<Point, Card> cardPositions;
+    public List<GraphicsGroup> miniCards;
     private int correctSets;
 
     /** Width of each element in pixels. */
@@ -35,6 +38,7 @@ public class GameBoard {
     public GameBoard(CanvasWindow canvas) {
         this.canvas = canvas;
         this.cardPositions = new HashMap<>();
+        this.miniCards = new ArrayList<>();
         correctSets = 0;
     }
 
@@ -130,6 +134,11 @@ public class GameBoard {
             canvas.remove(card.getGraphic());
         }
         cardPositions.clear();
+        for (GraphicsGroup mini : miniCards){
+            canvas.remove(mini);
+        }
+        miniCards.clear();
+        correctSets = 0;
     }
     /**
      * Returns a collection of all cards currently displayed on the board.
@@ -146,13 +155,17 @@ public class GameBoard {
         Card copy3 = new Card(card3.getId());
         GraphicsGroup copyGraphic1 = copy1.getGraphic();
         copyGraphic1.setScale(0.5);
+        miniCards.add(copyGraphic1);
         GraphicsGroup copyGraphic2 = copy2.getGraphic();
         copyGraphic2.setScale(0.5);
+        miniCards.add(copyGraphic2);
         GraphicsGroup copyGraphic3 = copy3.getGraphic();
         copyGraphic3.setScale(0.5);
-        canvas.add(copyGraphic1, SETSX, SETSY);
-        canvas.add(copyGraphic2, SETSX, SETSY+80);
-        canvas.add(copyGraphic3, SETSX, SETSY+160);
+        miniCards.add(copyGraphic3);
+        canvas.add(copyGraphic1, SETSX+(150*correctSets), SETSY);
+        canvas.add(copyGraphic2, SETSX+(150*correctSets), SETSY+80);
+        canvas.add(copyGraphic3, SETSX+(150*correctSets), SETSY+160);
+        correctSets++;
     }
 
 

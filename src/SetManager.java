@@ -42,6 +42,7 @@ public class SetManager {
      * Generates a list of cards that make a valid board
      */
     public List<Card> generateBoard(){
+        guess.clear();
         board = new ArrayList<>();
         iterate = 0;
         Arrays.fill(used, false); // reset used cards so all 81 IDs are used
@@ -51,6 +52,7 @@ public class SetManager {
             throw new RuntimeException("Failed to generate a valid board");
         }
 
+        System.out.println(findSets(board));
         return new ArrayList<>(board);
     }
 
@@ -133,6 +135,25 @@ public class SetManager {
             }
         }
         return setCount;
+    
+    }
+
+    /**
+     * Test method
+     * Returns a list of sets
+     */
+    public List<List<Card>> findSets(List<Card> board){
+        List<List<Card>> sets = new ArrayList<>();
+        for(int i=0; i<board.size()-2;i++){
+            for(int j=i+1; j<board.size()-1; j++){
+                for (int k=j+1; k<board.size();k++){
+                    if(guess.isValidSet(board.get(i),board.get(j),board.get(k))){
+                        sets.add(List.of(board.get(i), board.get(j), board.get(k)));
+                    }
+                }
+            }
+        }
+        return sets;
     
     }
 

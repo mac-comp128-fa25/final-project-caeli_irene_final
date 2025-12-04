@@ -91,7 +91,6 @@ public class GameOfSet {
         correctSets = 0;
         updateMistakesDisplay();
         updateCorrectSetsDisplay();
-       
     }
 
      /**

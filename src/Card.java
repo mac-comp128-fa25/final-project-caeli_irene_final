@@ -11,7 +11,7 @@ import java.util.Random;
  * The Card class represents a single card in the Set game with attributes like shape, color, fill, and number.
  * It also includes methods for setting position, selecting the card, and managing its graphics representation.
  */
-public class Card {
+public class Card implements Comparable{
     private String shape;
     private String color; 
     private String fill; 
@@ -123,6 +123,17 @@ public class Card {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public int compareTo(Object o){
+        if (this == o) return 0;
+        if (!(o instanceof Card)) return 0;
+        Card other = (Card) o;
+        if(id>other.getId()){
+            return 1;
+        }
+        return -1;
     }
 
     public String getShape() {
