@@ -1,8 +1,11 @@
 import edu.macalester.graphics.GraphicsText;
 import edu.macalester.graphics.CanvasWindow;
+import edu.macalester.graphics.GraphicsGroup;
 import edu.macalester.graphics.Point;
+import edu.macalester.graphics.Rectangle;
 import edu.macalester.graphics.ui.Button;
 import java.util.List;
+import java.awt.Color;
 
 /**
  * Main controller class for the Game of Set application.
@@ -24,7 +27,10 @@ public class GameOfSet {
     private int mistakes;
 
     private GraphicsText correctSetsDisplay; 
-    private int correctSets;                         
+    private int correctSets;            
+    
+    private GraphicsGroup winner;
+    private boolean won;
           
 
     /**
@@ -37,6 +43,7 @@ public class GameOfSet {
         // Core game components
         gameBoard = new GameBoard(canvas); 
         setManager = new SetManager(gameBoard); 
+        won = false;
 
         // Input handling
         canvas.onClick(e -> handleCardClick(e.getPosition())); 
@@ -46,7 +53,11 @@ public class GameOfSet {
         createMistakesDisplay(); //initialize mistakes display
         createCorrectSetDisplay();
         
-        canvas.animate(()->{});
+        canvas.animate(()->{
+            if (correctSets ==6){
+                youWon();
+            }
+        });
     }
 
     /**
@@ -84,6 +95,11 @@ public class GameOfSet {
      * and updating the display components.
      */
     public void refreshGame() {
+        if(won){
+            canvas.remove(winner);
+            won = false;
+            System.out.println("Won");
+        }
         setManager.generateBoard();
         setManager.assignPositions();
         gameBoard.setUpCards(setManager.currentCards);
@@ -137,6 +153,23 @@ public class GameOfSet {
         GameBoard.CARD_WIDTH * 4 + GameBoard.PADDING * 5,  
         GameBoard.PADDING + 80);
         canvas.add(correctSetsDisplay);
+    }
+
+    private void youWon(){
+        won = true;
+        winner = new GraphicsGroup();
+        Rectangle box = new Rectangle(0,0, GameBoard.CARD_WIDTH * 4 + GameBoard.PADDING * 5, GameBoard.CARD_HEIGHT*3 + GameBoard.PADDING*4);
+        box.setFillColor(CardGraphics.PURPLE);
+        winner.add(box);
+        GraphicsText message = new GraphicsText();
+        message.setText("You Won!!!" );
+        message.setFontSize(120);
+        message.setFillColor(new Color(250,250,250));
+        winner.add(message, GameBoard.CARD_WIDTH, GameBoard.CARD_HEIGHT*2);
+        Button newGame = new Button("New Game");
+        newGame.onClick(() -> refreshGame());
+        winner.add(newGame, GameBoard.CARD_WIDTH*2, GameBoard.CARD_HEIGHT*3);
+        canvas.add(winner,100,100);
     }
 
     /**

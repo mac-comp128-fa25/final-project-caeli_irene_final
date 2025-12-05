@@ -8,9 +8,9 @@ import edu.macalester.graphics.Rectangle;
  * Controls all the graphics of each card
  */
 public class CardGraphics {
-    private static final Color GREEN = new Color(0,200,0);
-    private static final Color RED = new Color(220,0,0);
-    private static final Color PURPLE = new Color(100,0,100);
+    public static final Color GREEN = new Color(0,200,0);
+    public static final Color RED = new Color(220,0,0);
+    public static final Color PURPLE = new Color(100,0,100);
 
     private GraphicsGroup graphics; 
     private ArrayList<SetPiece> shapes = new ArrayList<SetPiece>();
