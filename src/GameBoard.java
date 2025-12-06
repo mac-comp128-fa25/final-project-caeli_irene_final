@@ -130,13 +130,13 @@ public class GameBoard {
      * Removes all card graphics from the canvas and clears the board map.
      */
     public void clear() {
-        for (Card card : cardPositions.values()) {
-            canvas.remove(card.getGraphic());
-        }
+        // for (Card card : cardPositions.values()) {
+        //     canvas.remove(card.getGraphic());
+        // }
         cardPositions.clear();
-        for (GraphicsGroup mini : miniCards){
-            canvas.remove(mini);
-        }
+        // for (GraphicsGroup mini : miniCards){
+        //     canvas.remove(mini);
+        // }
         miniCards.clear();
         correctSets = 0;
     }

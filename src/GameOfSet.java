@@ -96,9 +96,12 @@ public class GameOfSet {
      */
     public void refreshGame() {
         if(won){
-            canvas.remove(winner);
+            canvas.removeAll();
             won = false;
             System.out.println("Won");
+            createRefreshButton(); //initialize refresh button
+            createMistakesDisplay(); //initialize mistakes display
+            createCorrectSetDisplay();
         }
         setManager.generateBoard();
         setManager.assignPositions();
