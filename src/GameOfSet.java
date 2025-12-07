@@ -95,13 +95,13 @@ public class GameOfSet {
      * and updating the display components.
      */
     public void refreshGame() {
+        canvas.removeAll();
+        createRefreshButton(); //initialize refresh button
+        createMistakesDisplay(); //initialize mistakes display
+        createCorrectSetDisplay();
         if(won){
-            canvas.removeAll();
             won = false;
             System.out.println("Won");
-            createRefreshButton(); //initialize refresh button
-            createMistakesDisplay(); //initialize mistakes display
-            createCorrectSetDisplay();
         }
         setManager.generateBoard();
         setManager.assignPositions();
@@ -171,7 +171,7 @@ public class GameOfSet {
         winner.add(message, GameBoard.CARD_WIDTH, GameBoard.CARD_HEIGHT*2);
         Button newGame = new Button("New Game");
         newGame.onClick(() -> refreshGame());
-        winner.add(newGame, GameBoard.CARD_WIDTH*2, GameBoard.CARD_HEIGHT*3);
+        winner.add(newGame, GameBoard.CARD_WIDTH*2, -30);
         canvas.add(winner,100,100);
     }
 
