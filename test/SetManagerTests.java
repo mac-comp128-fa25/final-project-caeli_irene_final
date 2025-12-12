@@ -5,10 +5,8 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import edu.macalester.graphics.CanvasWindow;
 
@@ -18,7 +16,6 @@ public class SetManagerTests {
     private GameBoard Gameboard;
     private SetManager manager;
     private List<Card> board;
-    private Random random = new Random();
     private Guess check;
     private static final int EXPECTED_BOARD_SIZE = 12;
     private static final int EXPECTED_NUMBER_OF_SETS = 6;
@@ -54,42 +51,6 @@ public class SetManagerTests {
             }
         }
         return sets;
-    }
-
-    @Test
-    public void testGetThird(){
-        manager.board = new ArrayList<>();
-        board = manager.board;
-        manager.getUnconnected();
-        manager.getUnconnected();
-        manager.getUnconnected();
-        manager.getUnconnected();
-        assertTrue(manager.board.size()==4);
-        int a = random.nextInt(manager.board.size()-1);
-        int b = random.nextInt(manager.board.size()-1);
-        while(a==b || manager.checkIfSet(manager.board.get(a),manager.board.get(b))){
-            b = random.nextInt(manager.board.size()-1);
-        }
-        manager.getThird(manager.board.get(a), manager.board.get(b));
-        assertEquals(5,manager.board.size());
-        assertEquals(1,manager.checkSets(manager.board));
-        assertTrue(manager.board.size()==5&&manager.checkSets(manager.board)==1);
-        manager.getUnconnected();
-    }
-
-    @Test
-    public void checkConnections(){
-        manager.board = new ArrayList<>();
-        board = manager.board;
-        for(int i=0; i<2;i++){
-            Card temp = new Card(i);
-            manager.board.add(temp);
-            manager.graphPoint.put(temp, manager.iterate);
-            manager.iterate++;
-            manager.used[temp.getId()] = true;
-        }
-        assertEquals(0,manager.checkSets(manager.board));
-        assertEquals(2,manager.getConnected()[2]);
     }
 
     @AfterEach

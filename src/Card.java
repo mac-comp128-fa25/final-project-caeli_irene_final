@@ -1,4 +1,3 @@
-import edu.macalester.graphics.CanvasWindow;
 import edu.macalester.graphics.GraphicsGroup;
 import edu.macalester.graphics.Point;
 
@@ -11,7 +10,7 @@ import java.util.Random;
  * The Card class represents a single card in the Set game with attributes like shape, color, fill, and number.
  * It also includes methods for setting position, selecting the card, and managing its graphics representation.
  */
-public class Card implements Comparable{
+public class Card implements Comparable<Card>{
     private String shape;
     private String color; 
     private String fill; 
@@ -126,10 +125,8 @@ public class Card implements Comparable{
     }
 
     @Override
-    public int compareTo(Object o){
-        if (this == o) return 0;
-        if (!(o instanceof Card)) return 0;
-        Card other = (Card) o;
+    public int compareTo(Card other){
+        if (this == other) return 0;
         if(id>other.getId()){
             return 1;
         }
@@ -200,18 +197,6 @@ public class Card implements Comparable{
 
     public String toString(){
         return "["+shape+" "+fill+" "+color+" "+number+"]";
-    }
-
-    public static void main(String[] args) {
-        Card test = new Card();
-        Card test2 = new Card();
-        GraphicsGroup temp = test.getGraphic();
-        GraphicsGroup temp2 = test2.getGraphic();
-        CanvasWindow canvas = new CanvasWindow("Test", 500, 500);
-        canvas.add(temp, 20, 20);
-        temp2.setScale(0.5);
-        canvas.add(temp2, 300, 300);
-        canvas.draw();
     }
 }
 
