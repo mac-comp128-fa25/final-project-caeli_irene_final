@@ -89,7 +89,11 @@ public class SetManager {
             ran = ran+2;
         } 
         if((size<2)&&(ran==1 || ran==2)){ //0,3
-            ran = 0; 
+            if (ran==1){
+                ran = 0;
+            } else {
+                ran = 3;
+            }
         }
         if((size<5)&&(ran==2)){
             ran = 3;
