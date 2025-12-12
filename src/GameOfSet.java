@@ -99,10 +99,7 @@ public class GameOfSet {
         createRefreshButton(); //initialize refresh button
         createMistakesDisplay(); //initialize mistakes display
         createCorrectSetDisplay();
-        if(won){
-            won = false;
-            System.out.println("Won");
-        }
+        won = false;
         setManager.generateBoard();
         setManager.assignPositions();
         gameBoard.setUpCards(setManager.currentCards);

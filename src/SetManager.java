@@ -51,11 +51,8 @@ public class SetManager {
         boolean success = boardFill(start); // find first slot at pos=0
         while(!success){
             start = System.nanoTime();
-            System.out.print("failed");
             success = boardFill(start);
         }
-
-        System.out.println(findSets(board));
         return new ArrayList<>(board);
     }
 
