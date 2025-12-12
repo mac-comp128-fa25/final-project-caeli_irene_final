@@ -167,20 +167,21 @@ public class SetManager {
      * Adds three random cards that make a set to the board
      */
     public void generateSet(){
-        Card[] tempCards = new Card[2];
         List<Integer> candidates = getUnconnectedId();
         Collections.shuffle(candidates, random);
-        tempCards[0] = new Card(candidates.get(0));
+        Card temp1 = new Card(candidates.get(0));
+        board.add(temp1);
+        graphPoint.put(temp1, iterate);
+        iterate++;
+        used[temp1.getId()] = true;
         candidates = getUnconnectedId();
         Collections.shuffle(candidates, random);
-        tempCards[1] = new Card(candidates.get(0));
-        getThird(tempCards[0], tempCards[1]);
-        for(Card temp:tempCards){
-            board.add(temp);
-            graphPoint.put(temp, iterate);
-            iterate++;
-            used[temp.getId()] = true;
-        }
+        Card temp2 = new Card(candidates.get(0));
+        board.add(temp2);
+        graphPoint.put(temp2, iterate);
+        iterate++;
+        used[temp2.getId()] = true;
+        getThird(temp1, temp2);
     }
 
     /**
@@ -205,17 +206,17 @@ public class SetManager {
         String shape;
         String fill;
         int num;
-        if(card1.getColor()==card2.getColor()){
+        if(card1.getColor().equals(card2.getColor())){
             color = card1.getColor();
         } else{
             color = card1.thirdColor(card2);
         }
-        if(card1.getShape()==card2.getShape()){
+        if(card1.getShape().equals(card2.getShape())){
             shape = card1.getShape();
         } else{
             shape = card1.thirdShape(card2);
         }
-        if(card1.getFill()==card2.getFill()){
+        if(card1.getFill().equals(card2.getFill())){
             fill = card1.getFill();
         } else{
             fill = card1.thirdFill(card2);
