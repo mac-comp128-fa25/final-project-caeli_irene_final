@@ -47,9 +47,12 @@ public class SetManager {
         iterate = 0;
         Arrays.fill(used, false); // reset used cards so all 81 IDs are used
 
-        boolean success = boardFill(); // find first slot at pos=0
-        if (!success) { // if recusion fails throw an exception
-            throw new RuntimeException("Failed to generate a valid board");
+        long start = System.nanoTime();
+        boolean success = boardFill(start); // find first slot at pos=0
+        while(!success){
+            start = System.nanoTime();
+            System.out.print("failed");
+            success = boardFill(start);
         }
 
         System.out.println(findSets(board));
@@ -59,16 +62,19 @@ public class SetManager {
     /**
      * A recurssive method to randomly builds the board
      */
-    private boolean boardFill(){
+    private boolean boardFill(long start){
         int ran = random.nextInt(3);
         int sets = checkSets(board);
         int size = board.size();
+        if(System.nanoTime() - start > 10000000){
+            return false;
+        }
         if(size==12 && sets>=6){
             return true;
         }
         if(sets>=6){
             getUnconnected();
-            return boardFill();
+            return boardFill(start);
         }
         if((12-size)==(6-sets)){
             ran = 2;
@@ -90,12 +96,12 @@ public class SetManager {
         }
         if(ran==0){
             generateSet();
-            return boardFill();
+            return boardFill(start);
         }
         if(ran==1){
             int a = random.nextInt(board.size()-1);
             generateSet(board.get(a));
-            return boardFill();
+            return boardFill(start);
         }
         if(ran==2){
             int a = random.nextInt(board.size()-1);
@@ -104,11 +110,11 @@ public class SetManager {
                 b = random.nextInt(board.size()-1);
             }
             getThird(board.get(a), board.get(b));
-            return boardFill();
+            return boardFill(start);
         }
         if(ran==3){
             getUnconnected();
-            return boardFill();
+            return boardFill(start);
         }
         return false;
     }

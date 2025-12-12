@@ -41,7 +41,7 @@ public class GameOfSet {
         canvas = new CanvasWindow("Game of Set", 1400, 840);
 
         // Core game components
-        gameBoard = new GameBoard(canvas); 
+        gameBoard = new GameBoard(canvas);
         setManager = new SetManager(gameBoard); 
         won = false;
 
